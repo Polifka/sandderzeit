@@ -32,5 +32,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/         # Vite-Build-Ausgabe
-          server-dir: /html/         # Zielordner auf ALL-INKL (ggf. anpassen)
+          server-dir: /sandderzeit.de/ # Zielordner auf ALL-INKL angepasst
           dangerous-clean-slate: false
