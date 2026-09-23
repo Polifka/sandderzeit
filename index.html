@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sand der Zeit – Mystik & Tarot</title>
+    <meta name="description"
+        content="Sand der Zeit – Tiefgründige Gespräche über Ego-Tod, Alchemie und Tarot. Individuelle Tarot-Sitzungen mit Filip Strüven.">
+    <link rel="icon" href="images/favicon.webp" type="image/webp">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="sand-canvas"></canvas>
+
+    <!-- Tarot Sidebar (Infinite Rain) -->
+    <aside id="tarot-sidebar">
+        <div class="tarot-track">
+            <!-- First Set -->
+            <img src="images/Tarot/1-drei der tsäbe Tarot.jpg" class="tarot-card">
+            <img src="images/Tarot/2-fünfdermünuzen.jpg" class="tarot-card">
+            <img src="images/Tarot/3-die-welt.jpg" class="tarot-card">
+            <img src="images/Tarot/4-zwei der kelche.jpg" class="tarot-card">
+            <img src="images/Tarot/5-Der Turm .jpg" class="tarot-card">
+            <img src="images/Tarot/6-As der Schwerter.jpg" class="tarot-card">
+            <img src="images/Tarot/7-die-liebenden.jpg" class="tarot-card">
+            <img src="images/Tarot/8-6 der Kelche  .jpg" class="tarot-card">
+            <img src="images/Tarot/9-acht-der-muenzen.jpg" class="tarot-card">
+            <img src="images/Tarot/10-der-magier.jpg" class="tarot-card">
+            <!-- Second Set for loop -->
+            <img src="images/Tarot/1-drei der tsäbe Tarot.jpg" class="tarot-card">
+            <img src="images/Tarot/2-fünfdermünuzen.jpg" class="tarot-card">
+            <img src="images/Tarot/3-die-welt.jpg" class="tarot-card">
+            <img src="images/Tarot/4-zwei der kelche.jpg" class="tarot-card">
+            <img src="images/Tarot/5-Der Turm .jpg" class="tarot-card">
+            <img src="images/Tarot/6-As der Schwerter.jpg" class="tarot-card">
+            <img src="images/Tarot/7-die-liebenden.jpg" class="tarot-card">
+            <img src="images/Tarot/8-6 der Kelche  .jpg" class="tarot-card">
+            <img src="images/Tarot/9-acht-der-muenzen.jpg" class="tarot-card">
+            <img src="images/Tarot/10-der-magier.jpg" class="tarot-card">
+        </div>
+    </aside>
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="header-logo">
+            <a href="#"><img src="images/ICON.png" alt="Sand der Zeit Logo" class="logo-icon"></a>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav id="nav-menu">
+            <ul>
+                <li><a href="#tarot">Tarot-Sitzungen</a></li>
+                <li><a href="#about">Über Uns</a></li>
+                <li><a href="#newsletter">Newsletter</a></li>
+                <li><a href="#podcast">Podcast</a></li>
+            </ul>
+        </nav>
+        <div class="header-cta">
+            <a href="https://cal.com/da.starchild/youtube" class="btn btn-nav">Jetzt buchen</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section id="hero" class="hero-section">
+            <img src="images/ICON.png" alt="Hero Background Logo" class="hero-bg-glyph">
+            <div class="hero-vignette"></div>
+            <div class="hero-content" data-fade>
+                <h2 class="hero-title animate-in delay-1">Erforsche die<br><em class="gold-gradient-text">Mysterien der
+                        Zeit</em></h2>
+                <p class="hero-sub animate-in delay-2">Fühlst du dich festgefahren? Finde tiefe Klarheit für die
+                    wichtigsten Entscheidungen deines Lebens.<br>Individuelle Tarot-Sitzungen, die das Wissen ans Licht
+                    bringen, das bereits in dir liegt.</p>
+                <div class="cta-buttons animate-in delay-3">
+                    <a href="#tarot" class="btn btn-primary btn-pulse">Tarot Buchen</a>
+                    <a href="#podcast" class="btn btn-ghost">Podcast Hören</a>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span class="scroll-indicator-label">Scroll</span>
+                <div class="scroll-indicator-line"></div>
+            </div>
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- TAROT INTRO -->
+        <section id="tarot" class="content-section alternate-bg reveal">
+            <div class="container text-center max-w-800">
+                <h2 class="section-title">Zu Euren Diensten,<br><em>Majestät</em></h2>
+                <p class="quote">„Könige und Königinnen hatten schon immer einen Magier, der sie in ihren Entscheidungen
+                    begleitete."</p>
+                <div class="text-block">
+                    <p>Von den alten Königen Sumers und Babylons bis zu US-Präsident Ronald Reagan: Einen Magier am Hof
+                        zu haben, der bei Entscheidungen unterstützt, den Überblick über den Moment schafft und zur
+                        inneren Stärke führt, war das Rezept all dieser Führenden.</p>
+                    <p>Mit meinen Tarot-Readings schaffe ich einen Raum, in dem du erspüren kannst, was in deinem Leben
+                        unter der Oberfläche wirklich vor sich geht. Du bist nie verloren, denn alles Wissen liegt
+                        bereits in dir.</p>
+                    <ul
+                        style="text-align: left; margin: 2rem auto; max-width: 500px; list-style-type: '✦  '; color: var(--gold);">
+                        <li><span style="color: var(--text);">Erkenne blinde Flecken in Beziehungen und Mustern</span>
+                        </li>
+                        <li><span style="color: var(--text);">Finde Orientierung bei großen Lebensentscheidungen</span>
+                        </li>
+                        <li><span style="color: var(--text);">Verbinde dich wieder mit deiner eigenen Intuition</span>
+                        </li>
+                    </ul>
+                    <p>Was hier hilft, ist kein Ratschlag, sondern eine Begleitung, die tiefer taucht als dein waches
+                        Bewusstsein. Eine Karte, mit der du dein Leben navigierst.</p>
+                </div>
+                <a href="https://cal.com/da.starchild/youtube" target="_blank"
+                    class="btn btn-primary btn-pulse margin-top-2">Jetzt buchen</a>
+                <p class="sub-text margin-top-1">Wirf einen Blick in dich selbst — mit dem Magier, dem bereits 350.000
+                    Menschen folgen.<br>Selbstverständlich sind alle Sitzungen vertraulich.</p>
+            </div>
+
+            <!-- PRICING -->
+            <div class="container margin-top-4">
+                <div class="pricing-grid">
+                    <!-- Card 1: 30 Min -->
+                    <div class="pricing-card tilt-card reveal">
+                        <div class="pricing-card-inner">
+                            <div class="pricing-top-accent"></div>
+                            <h3>30-Minuten Tarot-Reading</h3>
+                            <div class="price">55<span class="currency">€</span></div>
+                            <p>Eine fokussierte Sitzung für eine konkrete Frage oder Situation.</p>
+                            <a href="https://cal.com/da.starchild/yt30" target="_blank"
+                                class="btn btn-primary btn-block">Jetzt buchen</a>
+                        </div>
+                        <div class="card-glow"></div>
+                    </div>
+                    <!-- Card 2: 60 Min (highlighted) -->
+                    <div class="pricing-card tilt-card highlighted reveal">
+                        <div class="pricing-card-inner">
+                            <div class="pricing-top-accent"></div>
+                            <span class="most-popular">Beliebt</span>
+                            <h3>60-Minuten Tarot-Reading</h3>
+                            <div class="price">99<span class="currency">€</span></div>
+                            <p>Ein tieferer Blick in Muster, Energie und deinen Weg.</p>
+                            <a href="https://cal.com/da.starchild/yt60" target="_blank"
+                                class="btn btn-primary btn-block">Jetzt buchen</a>
+                        </div>
+                        <div class="card-glow"></div>
+                    </div>
+                    <!-- Card 3: Full Experience -->
+                    <div class="pricing-card tilt-card reveal">
+                        <div class="pricing-card-inner">
+                            <div class="pricing-top-accent"></div>
+                            <h3>Sand der Zeit<br><em style="font-style:italic; text-transform:none; letter-spacing:1px; font-size:0.85em;">Full Experience</em></h3>
+                            <div class="price" style="font-size: 3rem; margin: 1rem 0 0.5rem;">222<span class="currency">€</span></div>
+                            <p style="margin-bottom: 0.5rem; font-size: 0.8rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase;">mit Filip &amp; Jan</p>
+                            <p>Die tiefste Erfahrung – zwei Perspektiven, ein gemeinsamer Raum für deine Reise.</p>
+                            <a href="https://cal.com/da.starchild/sandderzeit" target="_blank"
+                                class="btn btn-primary btn-block">Jetzt buchen</a>
+                        </div>
+                        <div class="card-glow"></div>
+                    </div>
+                </div>
+                <div class="inclusive-note">
+                    <span class="inclusive-icon">♦</span>
+                    <strong>Inklusive:</strong> Jedes Reading wird für dich aufgezeichnet. Dein persönliches Artefakt —
+                    jederzeit abrufbar.
+                </div>
+            </div>
+
+
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- PHILOSOPHY -->
+        <section class="content-section reveal">
+            <div class="container text-center max-w-800">
+                <h2 class="section-title">Warum das Tarot wirkt</h2>
+                <div class="text-block">
+                    <p>Der Ursprung des Tarots ist ziemlich geheimnisvoll. Manche behaupten, es stamme aus dem alten
+                        Ägypten. Andere sind der Ansicht, es sei erstmals als Kartenspiel im Frankreich und Italien der
+                        Renaissance aufgetaucht.</p>
+                    <p>Und ich mag diese Ambiguität, denn für mich beschreibt sie das Tarot sehr gut. Es gibt zweifellos
+                        eine mystische Seite an diesem Werkzeug. Immer wieder staune ich über die Genauigkeit der
+                        Karten. Meine persönliche Sicht kommt dem nahe, was C. G. Jung diesem Phänomen zuschrieb:
+                        Synchronizität.</p>
+                    <blockquote class="jung-quote">
+                        „Das Tarot ist an sich ein Versuch, die Bestandteile des Flusses des Unbewussten darzustellen,
+                        und eignet sich daher für eine intuitive Methode, die den Fluss des Lebens verstehen, womöglich
+                        sogar zukünftige Ereignisse vorhersagen will — in jedem Fall aber die Bedingungen des
+                        gegenwärtigen Moments lesbar macht."
+                        <cite>— C. G. Jung</cite>
+                    </blockquote>
+                    <p>Es scheint, als kollidierten das kollektive Unbewusste und unser eigenes im Mischen und Legen der
+                        Karten. Es entsteht eine Empfindung, die sich bedeutsam anfühlt und auf wertvolle Weise für den
+                        Menschen gedeutet werden kann, der ein Reading empfängt.</p>
+                    <p>Das Intellektuelle beiseite — willst du ein Reading selbst erleben?</p>
+                </div>
+                <div class="margin-top-2">
+                    <p class="gold-label">Bereit? Wähle deine Sitzung.</p>
+                    <a href="https://cal.com/da.starchild/youtube" target="_blank"
+                        class="btn btn-primary btn-pulse margin-top-1">Jetzt buchen</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- ABOUT FILIP -->
+        <section id="about" class="content-section alternate-bg reveal">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-image reveal">
+                        <img src="images/filip.png" alt="Filip Strüven" class="about-portrait-img">
+                        <div class="about-img-glow"></div>
+                    </div>
+                    <div class="about-content">
+                        <h2 class="section-title text-left">Filip Strüven</h2>
+                        <div class="text-block">
+                            <p>Filip hat sich ausführlich mit den alten Symbolsprachen beschäftigt: mit antiker
+                                Geschichte, Mythologie, Alchemie, esoterischen Überlieferungen und der Tiefenpsychologie
+                                C. G. Jungs. Für ihn ist Tarot keine Wahrsagerei, sondern ein Spiegel und eine Karte.
+                                Was in einer Sitzung entsteht, kommt nicht von außen — es ist bereits in dir.</p>
+                            <p>Als <strong>DaStarchild</strong> teilt er diese Arbeit und Forschung öffentlich und hat
+                                damit ein weltweites Publikum von über <strong>35 Millionen Menschen</strong> erreicht —
+                                mit Videos, die tief in jene Fragen eintauchen, die die Menschheit seit Jahrtausenden
+                                begleiten.</p>
+                        </div>
+                        <div class="stats-row">
+                            <div class="stat">
+                                <div class="stat-number">35M+</div>
+                                <div class="stat-label">Menschen erreicht</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">350K+</div>
+                                <div class="stat-label">Follower</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- ABOUT JAN -->
+        <section id="about-jan" class="content-section reveal">
+            <div class="container">
+                <div class="about-grid about-grid-reverse">
+                    <div class="about-image reveal">
+                        <img src="images/jan.jpg" alt="Jan Polifka" class="about-portrait-img">
+                        <div class="about-img-glow"></div>
+                    </div>
+                    <div class="about-content">
+                        <h2 class="section-title text-left">Jan Polifka</h2>
+                        <div class="text-block">
+                            <p>Jan verbindet tiefe Persönlichkeitsentwicklung mit gelebter Spiritualität. Geprägt durch
+                                sein eigenes, einschneidendes Spiritual Awakening in Kambodscha im Jahr 2020 und die
+                                damit verbundenen Sinn- und Identitätsfragen, steht er heute für einen erfrischend
+                                pragmatischen Zugang zur Mystik – radikal ehrlich und völlig ohne Dogmen.</p>
+                            <p>Um die Geheimnisse des Okkultismus, mystischer Traditionen und alter Zivilisationen nicht
+                                nur theoretisch zu studieren, ist Jan um die ganze Welt gereist. Er hat die Energie
+                                antiker Stätten wie Teotihuacán, der Pyramiden von Gizeh, Angkor Wat und Chichén Itzá
+                                hautnah erlebt.</p>
+                            <p>Diese Erfahrungen aus erster Hand fließen auch in seinen Podcast <strong>„Iraner Jones
+                                    untersucht“</strong> ein, in dem er diesen Themen auf den Grund geht. Genau diesen
+                                analytischen Forschergeist bringt Jan nun in die Welt des Tarots ein: Er decodiert alte
+                                Symboliken so, dass sie für dich greifbar und im modernen Leben anwendbar werden.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- FAQ -->
+        <section class="content-section alternate-bg reveal">
+            <div class="container max-w-800">
+                <h2 class="section-title">Häufige Fragen</h2>
+                <div class="faq-accordion">
+                    <details>
+                        <summary>Funktioniert Tarot auch online?</summary>
+                        <div class="faq-content">Ja, absolut. Die Energie und Intention übertragen sich unabhängig von
+                            der räumlichen Distanz.</div>
+                    </details>
+                    <details>
+                        <summary>Ich bin skeptisch — ist das trotzdem etwas für mich?</summary>
+                        <div class="faq-content">Skepsis ist willkommen! Tarot ist kein Glaube, sondern ein Werkzeug der
+                            Selbstreflexion. Probier es einfach als psychologischen Spiegel aus.</div>
+                    </details>
+                    <details>
+                        <summary>Was passiert in einer Sitzung genau?</summary>
+                        <div class="faq-content">Wir besprechen dein Thema, ich ziehe die Karten und übersetze die
+                            archetypischen Symbole auf deine Lebenssituation.</div>
+                    </details>
+                    <details>
+                        <summary>Wie läuft die Aufzeichnung ab und wer hat Zugriff darauf?</summary>
+                        <div class="faq-content">Die Sitzung wird über Video-Call aufgezeichnet. Nur du erhältst den
+                            privaten Link dazu, absolute Vertraulichkeit ist garantiert.</div>
+                    </details>
+                    <details>
+                        <summary>Für wen ist ein Tarot-Reading geeignet?</summary>
+                        <div class="faq-content">Für jeden, der nach mehr Klarheit, Richtung oder einem tieferen
+                            Verständnis für sich selbst sucht.</div>
+                    </details>
+                    <details>
+                        <summary>Wie bereite ich mich auf meine Sitzung vor?</summary>
+                        <div class="faq-content">Komm mit offenem Herzen und einem ruhigen Geist. Überlege dir, welche
+                            Fragen oder Lebensbereiche du beleuchten möchtest.</div>
+                    </details>
+                    <details>
+                        <summary>Was unterscheidet deine Readings von anderen?</summary>
+                        <div class="faq-content">Ich verbinde klassisches Tarot mit tiefenpsychologischen Ansätzen nach
+                            C. G. Jung und mythologischem Wissen, anstatt reine "Zukunftsvorhersagen" zu machen.</div>
+                    </details>
+                </div>
+                <div class="text-center margin-top-4">
+                    <a href="https://cal.com/da.starchild/youtube" target="_blank"
+                        class="btn btn-primary btn-pulse">Jetzt
+                        buchen</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- NEWSLETTER -->
+        <section id="newsletter" class="content-section reveal">
+            <div class="container">
+                <div class="newsletter-box">
+                    <div class="newsletter-glow"></div>
+                    <div class="newsletter-icon">✦</div>
+                    <h2 class="section-title">Verbinde dich<br>mit uns</h2>
+                    <p>Melde dich für unseren Newsletter an und erhalte exklusive Einblicke, Tarot-Legungen und Angebote
+                        direkt in dein Postfach.</p>
+                    <div class="mailjet-form-wrapper">
+                        <iframe data-w-type="embedded" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                            src="https://155tu.mjt.lu/wgt/155tu/09ln/form?c=5613441f" width="100%"
+                            style="height: 0;"></iframe>
+                        <script type="text/javascript" src="https://app.mailjet.com/pas-nc-embedded-v2.js"></script>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIVIDER -->
+        <div class="ornament-divider"><span>✦</span></div>
+
+        <!-- PODCAST (PLAYLIST) -->
+        <section id="podcast" class="content-section reveal">
+            <div class="container text-center max-w-1000">
+                <h2 class="section-title">Der Podcast</h2>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                    <!-- Video 1 -->
+                    <div
+                        style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border: 1px solid var(--gold-dim); border-radius: 4px; box-shadow: 0 4px 24px rgba(217,147,17,0.1);">
+                        <iframe src="https://www.youtube.com/embed/sE8tWweWbL0"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;"
+                            allowfullscreen></iframe>
+                    </div>
+                    <!-- Video 2 -->
+                    <div
+                        style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border: 1px solid var(--gold-dim); border-radius: 4px; box-shadow: 0 4px 24px rgba(217,147,17,0.1);">
+                        <iframe src="https://www.youtube.com/embed/Uwz_mWDuN5A"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;"
+                            allowfullscreen></iframe>
+                    </div>
+                    <!-- Video 3 -->
+                    <div
+                        style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border: 1px solid var(--gold-dim); border-radius: 4px; box-shadow: 0 4px 24px rgba(217,147,17,0.1);">
+                        <iframe src="https://www.youtube.com/embed/6lOzVJGLRt0"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <img src="images/ICON.png" alt="Sand der Zeit Logo" class="footer-logo-icon">
+                <span>Sand der Zeit</span>
+            </div>
+            <div class="footer-links">
+                <a href="mailto:info@sandderzeit.de">Kontakt</a>
+                <a href="imprint.html">Impressum</a>
+                <a href="datenschutz.html">Datenschutz</a>
+                <a href="agb.html">AGB</a>
+            </div>
+            <p class="copyright">© 2026 Sand der Zeit. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script src="script.js" type="module"></script>
+</body>
+
+</html>

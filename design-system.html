@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sand der Zeit – Design System</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Marcellus&display=swap" rel="stylesheet">
+    <style>
+        .ds-section {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--gold-dim);
+        }
+        .ds-header {
+            text-align: center;
+            padding: 6rem 2rem 2rem;
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .color-swatch {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--gold-dim);
+            background: var(--bg-card);
+        }
+        .color-preview {
+            height: 100px;
+            width: 100%;
+        }
+        .color-info {
+            padding: 1rem;
+            text-align: center;
+        }
+        .color-info strong {
+            display: block;
+            font-family: var(--font-display);
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        .color-info span {
+            font-family: var(--font-body);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .typo-example {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .typo-label {
+            font-family: var(--font-body);
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .ui-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .ui-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Copy to clipboard styles */
+        .copyable {
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .copyable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(228, 175, 15, 0.1);
+        }
+        .copyable::after {
+            content: 'Kopieren';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--gold);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .copyable:hover::after {
+            opacity: 1;
+        }
+        .copyable.copied::after {
+            content: 'Kopiert!';
+            background: #fff;
+        }
+        
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gold);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: var(--font-display);
+            font-weight: bold;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header" style="position: absolute;">
+        <div class="logo">
+            <a href="index.html"><img src="images/ICON.png" alt="Sand der Zeit Logo" class="logo-icon"></a>
+        </div>
+        <a href="index.html" class="btn btn-ghost" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;">Zurück</a>
+    </header>
+
+    <main>
+        <div class="ds-header">
+            <span class="hero-eyebrow" style="opacity: 1;">✦ Brand Guide ✦</span>
+            <h1 class="hero-title" style="font-size: 4rem; opacity: 1;"><em class="gold-gradient-text">Design System</em></h1>
+            <p class="hero-sub" style="opacity: 1;">Farben, Typografie und UI-Elemente der Marke "Sand der Zeit".</p>
+        </div>
+
+        <section class="ds-section">
+            <h2 class="section-title text-left">1. Farbpalette</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Die Farben erzeugen eine mystische, tiefgründige und edle Atmosphäre. Der Fokus liegt auf satten, dunklen Tönen, akzentuiert durch leuchtendes Gold.</p>
+            
+            <div class="color-grid">
+                <div class="color-swatch copyable" data-copy="#0a0906">
+                    <div class="color-preview" style="background: #0a0906;"></div>
+                    <div class="color-info">
+                        <strong>Background</strong>
+                        <span>#0a0906<br>var(--bg)</span>
+                    </div>
+                </div>
+                <div class="color-swatch copyable" data-copy="#110d08">
+                    <div class="color-preview" style="background: #110d08;"></div>
+                    <div class="color-info">
+                        <strong>Card BG</strong>
+                        <span>#110d08<br>var(--bg-card)</span>
+                    </div>
+                </div>
+                <div class="color-swatch copyable" data-copy="#e4af0f">
+                    <div class="color-preview" style="background: #e4af0f;"></div>
+                    <div class="color-info">
+                        <strong>Gold (Primary)</strong>
+                        <span>#e4af0f<br>var(--gold)</span>
+                    </div>
+                </div>
+                <div class="color-swatch copyable" data-copy="rgba(217, 147, 17, 0.2)">
+                    <div class="color-preview" style="background: rgba(217, 147, 17, 0.2);"></div>
+                    <div class="color-info">
+                        <strong>Gold Dimmed</strong>
+                        <span>rgba(217,147,17,0.2)<br>var(--gold-dim)</span>
+                    </div>
+                </div>
+                <div class="color-swatch copyable" data-copy="#f0ece0">
+                    <div class="color-preview" style="background: #f0ece0;"></div>
+                    <div class="color-info">
+                        <strong>Text Light</strong>
+                        <span>#f0ece0<br>var(--text)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ds-section">
+            <h2 class="section-title text-left">2. Typografie</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Die Kombination aus einer majestätischen Serifenschrift für Überschriften und einer philosophischen Serife für Texte.</p>
+            
+            <div class="typo-example">
+                <span class="typo-label">Überschriften (Font: Marcellus)</span>
+                <h1 style="font-family: 'Marcellus', serif; font-size: 3rem; margin-bottom: 0.5rem; font-weight: 400; color: var(--text);">Sand der Zeit</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Verwendung: h1, h2, h3, Buttons, Navigation, Eyebrows.</p>
+            </div>
+
+            <div class="typo-example">
+                <span class="typo-label">Fließtext (Font: Cormorant Garamond)</span>
+                <p style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; line-height: 1.6; color: var(--text);">„Das Tarot ist an sich ein Versuch, die Bestandteile des Flusses des Unbewussten darzustellen, und eignet sich daher für eine intuitive Methode, die den Fluss des Lebens verstehen will.“</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Verwendung: Absätze, Fließtext, Zitate (kursiv).</p>
+            </div>
+        </section>
+
+        <section class="ds-section" style="border-bottom: none;">
+            <h2 class="section-title text-left">3. UI Komponenten</h2>
+            
+            <div class="ui-grid">
+                <div>
+                    <span class="typo-label">Buttons</span>
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem; align-items: flex-start;">
+                        <a href="#" class="btn btn-primary btn-pulse">Primary Button</a>
+                        <a href="#" class="btn btn-ghost">Ghost Button</a>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="typo-label">Trennlinien (Divider)</span>
+                    <div class="ornament-divider" style="margin: 2rem 0;"><span>✦</span></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 4rem;">
+                <span class="typo-label">Content Cards (Glas-Effekt)</span>
+                <div class="ui-grid">
+                    <div class="testimonial-card tilt-card" style="margin: 0; width: 100%;">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p>„Wow!! Vielen Dank für dieses erhellende Reading. Dieses Reading kam von Herzen und lässt mich tief darüber nachdenken, wie ich weitergehe.“</p>
+                        <div class="author">— Beispiel Kunde</div>
+                        <div class="card-glow"></div>
+                    </div>
+                    <div class="pricing-card tilt-card highlighted" style="margin: 0; width: 100%; opacity: 1; transform: none;">
+                        <div class="pricing-card-inner">
+                            <div class="pricing-top-accent"></div>
+                            <span class="most-popular">Beispiel</span>
+                            <h3>Tarot-Reading</h3>
+                            <div class="price">99<span class="currency">€</span></div>
+                            <p>Ein tieferer Blick in Muster, Energie und deinen Weg.</p>
+                            <button class="btn btn-primary btn-block">Aktion</button>
+                        </div>
+                        <div class="card-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="toast">In die Zwischenablage kopiert!</div>
+    <script>
+        const copyables = document.querySelectorAll('.copyable');
+        const toast = document.getElementById('toast');
+        let toastTimeout;
+
+        copyables.forEach(el => {
+            el.addEventListener('click', () => {
+                const textToCopy = el.getAttribute('data-copy');
+                if (textToCopy) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        el.classList.add('copied');
+                        toast.innerText = textToCopy + ' kopiert!';
+                        toast.classList.add('show');
+                        
+                        setTimeout(() => el.classList.remove('copied'), 1500);
+                        
+                        clearTimeout(toastTimeout);
+                        toastTimeout = setTimeout(() => {
+                            toast.classList.remove('show');
+                        }, 2000);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

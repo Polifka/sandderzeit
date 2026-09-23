@@ -1,0 +1,36 @@
+name: Deploy to ALL-INKL
+
+on:
+  push:
+    branches:
+      - main  # Triggert bei jedem Push auf den main Branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Code auschecken
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Abhängigkeiten installieren
+        run: npm ci
+
+      - name: 🔨 Produktions-Build erstellen
+        run: npm run build
+
+      - name: 🚀 Per FTP zu ALL-INKL deployen
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/         # Vite-Build-Ausgabe
+          server-dir: /html/         # Zielordner auf ALL-INKL (ggf. anpassen)
+          dangerous-clean-slate: false
