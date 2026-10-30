@@ -68,6 +68,10 @@
                     <input type="text" id="l2" value="Entschlüsselt">
                 </div>
                 <div class="field">
+                    <label for="tsize">Schriftgröße</label>
+                    <input type="range" id="tsize" min="50" max="150" value="100">
+                </div>
+                <div class="field">
                     <label for="color2">Farbe Zeile 2</label>
                     <select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select>
                 </div>
@@ -114,7 +118,8 @@
         const out = document.getElementById('out'), ctx = out.getContext('2d');
         const mini = document.getElementById('mini').getContext('2d');
         const $ = (id) => document.getElementById(id);
-        let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null;
+        let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null, guides = { v: false, h: false };
+        const SNAP = 12;
         const logo = $('logo');
 
         // ── Hilfen ──
@@ -198,20 +203,22 @@
             // Headline
             const l1 = $('l1').value.trim().toUpperCase(), l2 = $('l2').value.trim().toUpperCase();
             const fit = (text, max, size) => { do { ctx.font = `900 ${size}px Cinzel`; size -= 2; } while (size > 24 && ctx.measureText(text).width > max); return ctx.font; };
+            const ts = +$('tsize').value / 100;
             const line = (text, font, y, color) => {
                 if (!text) return;
                 const cx = W / 2 + textOff.x; y += textOff.y;
                 ctx.font = font; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.lineJoin = 'round';
-                ctx.save(); ctx.shadowColor = C.shadow; ctx.shadowBlur = 30; ctx.fillStyle = C.shadow; ctx.fillText(text, cx, y); ctx.restore();
-                ctx.lineWidth = 16; ctx.strokeStyle = C.shadow; ctx.strokeText(text, cx, y + 5);
-                ctx.lineWidth = 14; ctx.strokeText(text, cx, y);
+                ctx.save(); ctx.shadowColor = C.shadow; ctx.shadowBlur = 30 * ts; ctx.fillStyle = C.shadow; ctx.fillText(text, cx, y); ctx.restore();
+                ctx.lineWidth = 16 * ts; ctx.strokeStyle = C.shadow; ctx.strokeText(text, cx, y + 5 * ts);
+                ctx.lineWidth = 14 * ts; ctx.strokeText(text, cx, y);
                 ctx.fillStyle = color; ctx.fillText(text, cx, y);
                 ctx.textAlign = 'left';
             };
-            const f2 = fit(l2, W - 160, 104); ctx.font = f2; const h2 = ctx.measureText(l2 || 'M').actualBoundingBoxAscent;
+            const maxW = ts > 1 ? W - 70 : W - 160;
+            const f2 = fit(l2, maxW, Math.round(104 * ts)); ctx.font = f2; const h2 = ctx.measureText(l2 || 'M').actualBoundingBoxAscent;
             const y2 = H - M - 48;
-            const f1 = fit(l1, W - 160, 64); ctx.font = f1;
-            const y1 = y2 - h2 - 22;
+            const f1 = fit(l1, maxW, Math.round(64 * ts)); ctx.font = f1;
+            const y1 = y2 - h2 - Math.round(22 * ts);
             line(l1, f1, y1, C.ink);
             line(l2, f2, y2, $('color2').value === 'gold' ? C.gold : C.ink);
             // Rahmen um den Textblock merken (für Drag and Drop)
@@ -244,6 +251,14 @@
 
             // Mini-Vorschau
             mini.clearRect(0, 0, 246, 138); mini.drawImage(out, 0, 0, 246, 138);
+
+            // Ausrichtungslinien beim Ziehen
+            if (drag && (guides.v || guides.h)) {
+                ctx.save(); ctx.strokeStyle = '#f0c35a'; ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
+                if (guides.v) { ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke(); }
+                if (guides.h) { ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke(); }
+                ctx.restore();
+            }
         }
 
         // ── Eingaben ──
@@ -258,7 +273,7 @@
             cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
         });
         $('csize').addEventListener('input', draw);
-        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; draw(); });
+        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; $('tsize').value = 100; draw(); });
 
         // Drag and Drop in der Vorschau
         const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
@@ -273,13 +288,23 @@
         });
         out.addEventListener('pointermove', (e) => {
             const p = toCanvas(e);
-            if (drag && drag.type === 'text') { textOff.x = Math.round(p.x - drag.dx); textOff.y = Math.round(p.y - drag.dy); draw(); }
-            else if (drag) { drag.c.x = Math.round(p.x - drag.dx); drag.c.y = Math.round(p.y - drag.dy); draw(); }
+            if (drag && drag.type === 'text') {
+                let nx = Math.round(p.x - drag.dx), ny = Math.round(p.y - drag.dy);
+                guides.v = Math.abs(nx) < SNAP; if (guides.v) nx = 0;
+                guides.h = false;
+                if (textBox) { const cy = textBox.y + textBox.h / 2 + (ny - textOff.y); guides.h = Math.abs(cy - H / 2) < SNAP; if (guides.h) ny += Math.round(H / 2 - cy); }
+                textOff.x = nx; textOff.y = ny; draw();
+            } else if (drag) {
+                const c = drag.c; let nx = Math.round(p.x - drag.dx), ny = Math.round(p.y - drag.dy);
+                guides.v = Math.abs(nx + c.w / 2 - W / 2) < SNAP; if (guides.v) nx = Math.round(W / 2 - c.w / 2);
+                guides.h = Math.abs(ny + c.h / 2 - H / 2) < SNAP; if (guides.h) ny = Math.round(H / 2 - c.h / 2);
+                c.x = nx; c.y = ny; draw();
+            }
             else out.style.cursor = (hit(p) >= 0 || inText(p)) ? 'grab' : 'default';
         });
-        const endDrag = () => { if (drag) { drag = null; out.style.cursor = 'default'; draw(); } };
+        const endDrag = () => { if (drag) { drag = null; guides = { v: false, h: false }; out.style.cursor = 'default'; draw(); } };
         out.addEventListener('pointerup', endDrag); out.addEventListener('pointercancel', endDrag);
-        ['l1', 'l2', 'ep', 'dark', 'color2'].forEach((id) => $(id).addEventListener('input', draw));
+        ['l1', 'l2', 'ep', 'dark', 'color2', 'tsize'].forEach((id) => $(id).addEventListener('input', draw));
         document.querySelectorAll('input[name=variant]').forEach((r) => r.addEventListener('change', draw));
 
         const fileName = (ext) => {
