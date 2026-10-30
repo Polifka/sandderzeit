@@ -62,36 +62,53 @@ $body = [
     ],
 ];
 
-@set_time_limit(180);
-$ch = curl_init('https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent');
-curl_setopt_array($ch, [
-    CURLOPT_POST => true,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'x-goog-api-key: ' . $apiKey],
-    CURLOPT_POSTFIELDS => json_encode($body),
-    CURLOPT_CONNECTTIMEOUT => 15,
-    CURLOPT_TIMEOUT => 170,
-]);
-$raw = curl_exec($ch);
-$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$err = curl_error($ch);
-curl_close($ch);
+@set_time_limit(240);
 
-if ($raw === false) fail(502, 'Gemini nicht erreichbar: ' . $err);
-$res = json_decode($raw, true);
-if ($status >= 400) fail($status === 429 ? 429 : 502, 'Gemini meldet: ' . ($res['error']['message'] ?? "HTTP $status"));
+function callGemini($model, $apiKey, $body) {
+    $ch = curl_init('https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'x-goog-api-key: ' . $apiKey],
+        CURLOPT_POSTFIELDS => json_encode($body),
+        CURLOPT_CONNECTTIMEOUT => 15,
+        CURLOPT_TIMEOUT => 110,
+    ]);
+    $raw = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
+    curl_close($ch);
+    if ($raw === false) fail(502, 'Gemini nicht erreichbar: ' . $err);
+    $res = json_decode($raw, true);
+    if ($status >= 400) fail($status === 429 ? 429 : 502, 'Gemini meldet: ' . ($res['error']['message'] ?? "HTTP $status"));
 
-$outImages = [];
-$text = '';
-foreach ($res['candidates'][0]['content']['parts'] ?? [] as $p) {
-    $d = $p['inlineData'] ?? $p['inline_data'] ?? null;
-    if ($d && !empty($d['data'])) $outImages[] = ['mime' => $d['mimeType'] ?? $d['mime_type'] ?? 'image/png', 'data' => $d['data']];
-    elseif (!empty($p['text']) && empty($p['thought'])) $text .= $p['text'];
+    $images = []; $text = '';
+    foreach ($res['candidates'][0]['content']['parts'] ?? [] as $p) {
+        $d = $p['inlineData'] ?? $p['inline_data'] ?? null;
+        if ($d && !empty($d['data'])) $images[] = ['mime' => $d['mimeType'] ?? $d['mime_type'] ?? 'image/png', 'data' => $d['data']];
+        elseif (!empty($p['text']) && empty($p['thought'])) $text .= $p['text'];
+    }
+    $reason = $res['candidates'][0]['finishReason'] ?? ($res['promptFeedback']['blockReason'] ?? '');
+    return [$images, trim($text), $reason];
+}
+
+// Gemini liefert manchmal ohne erkennbaren Grund kein Bild (IMAGE_OTHER). Dann einmal neu versuchen.
+for ($try = 1; $try <= 2; $try++) {
+    [$outImages, $text, $reason] = callGemini($model, $apiKey, $body);
+    if ($outImages) break;
+    if (!in_array($reason, ['IMAGE_OTHER', 'OTHER', 'STOP', ''], true)) break;
 }
 
 if (!$outImages) {
-    $reason = $res['candidates'][0]['finishReason'] ?? ($res['promptFeedback']['blockReason'] ?? '');
-    fail(422, 'Kein Bild erhalten' . ($reason ? " ($reason)" : '') . ($text ? ': ' . $text : '. Prompt etwas umformulieren.'));
+    $why = [
+        'IMAGE_SAFETY' => 'Gemini hat das Bild aus Sicherheitsgründen zurückgehalten. Häufig wegen freizügiger Kleidung oder Gewalt im Prompt oder in den Referenzen.',
+        'SAFETY' => 'Gemini hat die Anfrage aus Sicherheitsgründen abgelehnt. Prompt oder Referenzbilder entschärfen.',
+        'PROHIBITED_CONTENT' => 'Gemini stuft den Inhalt als nicht erlaubt ein. Prompt oder Referenzbilder ändern.',
+        'IMAGE_PROHIBITED_CONTENT' => 'Gemini stuft das Bild als nicht erlaubt ein. Oft wegen echter, bekannter Personen in den Referenzen.',
+        'IMAGE_RECITATION' => 'Das Ergebnis war zu nah an einem geschützten Werk. Prompt freier formulieren.',
+        'IMAGE_OTHER' => 'Gemini hat zweimal kein Bild geliefert. Häufige Ursachen: Referenzfoto einer echten Person, freizügige Kleidung, oder der Prompt verlangt zu viel auf einmal. Probier es ohne Referenzbild oder mit einem anderen Foto.',
+    ][$reason] ?? 'Kein Bild erhalten' . ($reason ? " ($reason)" : '') . '. Prompt etwas umformulieren.';
+    fail(422, $why . ($text ? ' Gemini schreibt: ' . $text : ''));
 }
 
 file_put_contents($counterFile, (string)($used + 1), LOCK_EX);

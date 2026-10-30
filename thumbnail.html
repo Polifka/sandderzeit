@@ -550,7 +550,7 @@
             if (images.length) {
                 const hints = [];
                 if ($('kiUseScene').checked) hints.push('Bild 1 ist die aktuelle Vorlage, die bearbeitet werden soll.');
-                if (kiRefs.length) hints.push(`${$('kiUseScene').checked ? 'Die weiteren Bilder sind' : 'Die Bilder sind'} Referenzen für Personen oder Motive. Gesichter und Kleidung der Personen aus den Referenzen erkennbar übernehmen.`);
+                if (kiRefs.length) hints.push(`${$('kiUseScene').checked ? 'Die weiteren Bilder sind' : 'Die Bilder sind'} Referenzen für Personen oder Motive. Nutze sie als Vorlage für Aussehen, Frisur und Kleidung der Figuren in der Szene.`);
                 prompt = hints.join(' ') + '\n\n' + prompt;
             }
             if ($('kiRules').checked) prompt += '\n\n' + KI_RULES;
