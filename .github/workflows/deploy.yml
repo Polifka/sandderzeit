@@ -28,14 +28,6 @@ jobs:
       - name: 🔨 Produktions-Build erstellen
         run: npm run build
 
-      - name: 🔑 KI-Zugang für das Thumbnail-Werkzeug hinterlegen
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          TOOL_PASSWORD: ${{ secrets.TOOL_PASSWORD }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-          KI_DAILY_LIMIT: ${{ vars.KI_DAILY_LIMIT }}
-        run: node scripts/write-ki-config.mjs
-
       - name: 🚀 Per FTP zu ALL-INKL deployen
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
