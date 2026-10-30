@@ -44,6 +44,7 @@ export default defineConfig({
         agb: resolve(__dirname, 'agb.html'),
         datenschutz: resolve(__dirname, 'datenschutz.html'),
         thumbnail: resolve(__dirname, 'thumbnail.html'),
+        designsystem: resolve(__dirname, 'design-system.html'),
       },
     },
   },

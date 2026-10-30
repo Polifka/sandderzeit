@@ -3,284 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sand der Zeit – Design System</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Sand der Zeit · Designsystem</title>
+    <link rel="icon" href="images/web/favicon.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Marcellus&display=swap" rel="stylesheet">
     <style>
-        .ds-section {
-            padding: 4rem 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-            border-bottom: 1px solid var(--gold-dim);
-        }
-        .ds-header {
-            text-align: center;
-            padding: 6rem 2rem 2rem;
-        }
-        .color-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        .color-swatch {
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--gold-dim);
-            background: var(--bg-card);
-        }
-        .color-preview {
-            height: 100px;
-            width: 100%;
-        }
-        .color-info {
-            padding: 1rem;
-            text-align: center;
-        }
-        .color-info strong {
-            display: block;
-            font-family: var(--font-display);
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-        .color-info span {
-            font-family: var(--font-body);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        .typo-example {
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .typo-label {
-            font-family: var(--font-body);
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-        .ui-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        @media (max-width: 768px) {
-            .ui-grid { grid-template-columns: 1fr; }
-        }
-        
-        /* Copy to clipboard styles */
-        .copyable {
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.2s;
-        }
-        .copyable:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(228, 175, 15, 0.1);
-        }
-        .copyable::after {
-            content: 'Kopieren';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--gold);
-            color: #000;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-family: var(--font-body);
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-        }
-        .copyable:hover::after {
-            opacity: 1;
-        }
-        .copyable.copied::after {
-            content: 'Kopiert!';
-            background: #fff;
-        }
-        
-        #toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--gold);
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-family: var(--font-display);
-            font-weight: bold;
-            letter-spacing: 1px;
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 9999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        #toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .ds { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .ds-hero { padding: 150px 0 40px; text-align: center; }
+        .ds-hero h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 6vw, 68px); letter-spacing: .04em; color: var(--ink); margin-top: 16px; }
+        .ds-hero p { max-width: 640px; margin: 16px auto 0; font-style: italic; font-size: 23px; color: var(--ink-muted); }
+        .ds-toc { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; margin-top: 32px; }
+        .ds-toc a { font-family: var(--font-display); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; }
+        .ds-sec { padding: 80px 0; border-top: 1px solid var(--line); }
+        .ds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .ds-p { max-width: 760px; margin: 0 auto 32px; text-align: center; color: var(--ink-muted); }
+        .ds-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 24px; }
+        .ds-box h3 { font-family: var(--font-display); font-weight: 600; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+        .ds-box p, .ds-box li { font-size: 19px; color: var(--ink-muted); }
+        .ds-box ul { margin-left: 20px; }
+        .sw { border: 1px solid var(--line); border-radius: var(--radius-card); overflow: hidden; background: var(--surface); }
+        .sw__c { height: 96px; }
+        .sw__t { padding: 14px 16px; }
+        .sw__t b { display: block; font-family: var(--font-display); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+        .sw__t code { font-size: 15px; color: var(--gold); }
+        .sw__t p { margin-top: 6px; font-size: 16px; line-height: 1.45; color: var(--ink-muted); }
+        .type-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+        .type-row:first-child { border-top: 1px solid var(--line); }
+        .type-row small { flex: 0 0 220px; font-family: var(--font-display); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+        .type-row span { flex: 1 1 400px; min-width: 0; color: var(--ink); }
+        .ds-components { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: flex-start; }
+        .ds-label { margin-top: 14px; text-align: center; font-family: var(--font-display); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-muted); }
+        .do-dont { width: 100%; border-collapse: collapse; }
+        .do-dont th, .do-dont td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; font-size: 19px; vertical-align: top; }
+        .do-dont th { font-family: var(--font-display); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 400; }
+        .do-dont td:first-child { color: var(--ink); } .do-dont td:last-child { color: var(--ink-muted); text-decoration: line-through; text-decoration-color: var(--rost); }
+        .prompt { position: relative; margin-top: 12px; padding: 18px 20px; background: var(--ground); border: 1px solid var(--line-strong); font-style: italic; font-size: 19px; color: var(--ink); }
+        .dl { display: flex; flex-direction: column; gap: 12px; }
+        .dl img { width: 100%; height: 180px; object-fit: contain; background: #000; border-radius: var(--radius-sm); }
+        .ds-table { overflow-x: auto; }
     </style>
 </head>
 <body>
-
-    <header id="main-header" style="position: absolute;">
-        <div class="logo">
-            <a href="index.html"><img src="images/ICON.png" alt="Sand der Zeit Logo" class="logo-icon"></a>
-        </div>
-        <a href="index.html" class="btn btn-ghost" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;">Zurück</a>
+    <header id="main-header" class="scrolled">
+        <a href="index.html" class="brand"><img src="images/web/logo-nav.webp" alt="" width="26" height="44"><span>Sand der Zeit</span></a>
+        <nav aria-label="Designsystem"><ul><li><a href="thumbnail.html">Thumbnail-Werkzeug</a></li><li><a href="index.html">Website</a></li></ul></nav>
     </header>
 
-    <main>
-        <div class="ds-header">
-            <span class="hero-eyebrow" style="opacity: 1;">✦ Brand Guide ✦</span>
-            <h1 class="hero-title" style="font-size: 4rem; opacity: 1;"><em class="gold-gradient-text">Design System</em></h1>
-            <p class="hero-sub" style="opacity: 1;">Farben, Typografie und UI-Elemente der Marke "Sand der Zeit".</p>
-        </div>
+    <main class="ds">
+        <section class="ds-hero">
+            <span class="section-head__numeral">0</span>
+            <div class="ornament" style="margin-top:16px"><i></i><b></b><i></i></div>
+            <h1>Das Designsystem</h1>
+            <p>Die Marke sieht nicht aus wie eine Seite über Tarot. Sie sieht aus, als wäre sie selbst ein Tarotdeck. Wüste bei Nacht, Gold, Karten.</p>
+            <nav class="ds-toc" aria-label="Inhalt">
+                <a href="#idee">I · Idee</a><a href="#stimme">II · Stimme</a><a href="#farben">III · Farben</a><a href="#schrift">IV · Schrift</a>
+                <a href="#bausteine">V · Bausteine</a><a href="#bilder">VI · Bildsprache</a><a href="#logo">VII · Logo</a><a href="#werkzeuge">VIII · Werkzeuge</a>
+            </nav>
+        </section>
 
-        <section class="ds-section">
-            <h2 class="section-title text-left">1. Farbpalette</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">Die Farben erzeugen eine mystische, tiefgründige und edle Atmosphäre. Der Fokus liegt auf satten, dunklen Tönen, akzentuiert durch leuchtendes Gold.</p>
-            
-            <div class="color-grid">
-                <div class="color-swatch copyable" data-copy="#0a0906">
-                    <div class="color-preview" style="background: #0a0906;"></div>
-                    <div class="color-info">
-                        <strong>Background</strong>
-                        <span>#0a0906<br>var(--bg)</span>
-                    </div>
-                </div>
-                <div class="color-swatch copyable" data-copy="#110d08">
-                    <div class="color-preview" style="background: #110d08;"></div>
-                    <div class="color-info">
-                        <strong>Card BG</strong>
-                        <span>#110d08<br>var(--bg-card)</span>
-                    </div>
-                </div>
-                <div class="color-swatch copyable" data-copy="#e4af0f">
-                    <div class="color-preview" style="background: #e4af0f;"></div>
-                    <div class="color-info">
-                        <strong>Gold (Primary)</strong>
-                        <span>#e4af0f<br>var(--gold)</span>
-                    </div>
-                </div>
-                <div class="color-swatch copyable" data-copy="rgba(217, 147, 17, 0.2)">
-                    <div class="color-preview" style="background: rgba(217, 147, 17, 0.2);"></div>
-                    <div class="color-info">
-                        <strong>Gold Dimmed</strong>
-                        <span>rgba(217,147,17,0.2)<br>var(--gold-dim)</span>
-                    </div>
-                </div>
-                <div class="color-swatch copyable" data-copy="#f0ece0">
-                    <div class="color-preview" style="background: #f0ece0;"></div>
-                    <div class="color-info">
-                        <strong>Text Light</strong>
-                        <span>#f0ece0<br>var(--text)</span>
-                    </div>
-                </div>
+        <!-- I IDEE -->
+        <section id="idee" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">I</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Die Marke ist ein Deck</h2></header>
+            <div class="ds-grid">
+                <div class="ds-box"><h3>Das Logo ist Karte 0</h3><p>Die Sanduhr mit dem Auge des Horus, gerahmt wie eine Karte der großen Arkana.</p></div>
+                <div class="ds-box"><h3>Angebote sind Karten</h3><p>Ziffer, Name, Rahmen: I Die Frage, II Der Blick, III Die Legung, IV Das Große Arkanum.</p></div>
+                <div class="ds-box"><h3>Abschnitte sind gezogene Karten</h3><p>Römische Ziffer, Ornament, Überschrift. Die Seite liest sich wie eine Legung.</p></div>
+                <div class="ds-box"><h3>Thumbnails sind alte Karten</h3><p>Pergamentrand, Kupferstich-Szene, echte Rider-Waite-Karten, Headline in Cinzel Black.</p></div>
+            </div>
+            <p class="ds-p" style="margin-top:32px">Im Zweifel: Wie würde das auf einer Tarotkarte stehen?</p>
+        </section>
+
+        <!-- II STIMME -->
+        <section id="stimme" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">II</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Stimme</h2><p class="section-head__lead">Ruhig, tief, ehrlich. Wie in der Show: persönlich, mit Wissen, ohne Kitsch.</p></header>
+            <div class="ds-grid" style="margin-bottom:40px">
+                <div class="ds-box"><h3>Immer du</h3><p>Nie Sie. Auch in Mails, Posts und Buchungstexten.</p></div>
+                <div class="ds-box"><h3>Reflexion statt Vorhersage</h3><p>Die Karten sind ein Werkzeug, um auf dich selbst zu schauen. Keine Zukunftsdeutung, keine Heilsversprechen.</p></div>
+                <div class="ds-box"><h3>Keine Gedankenstriche</h3><p>Lieber zwei Sätze oder ein Doppelpunkt. Emojis höchstens als Pfeil vor einem Link in Mails.</p></div>
+                <div class="ds-box"><h3>Kursiv ist die Stimme</h3><p>Einleitungen und Zitate stehen in Cormorant kursiv.</p></div>
+            </div>
+            <div class="ds-table">
+                <table class="do-dont">
+                    <thead><tr><th>So</th><th>Nicht so</th></tr></thead>
+                    <tbody>
+                        <tr><td>Die Karten zeigen dir, was du schon ahnst.</td><td>Erfahre JETZT deine Zukunft!!!</td></tr>
+                        <tr><td>Schau mit den Karten auf deine Situation.</td><td>Die Karten sagen dir, was passieren wird.</td></tr>
+                        <tr><td>III · Die Legung</td><td>60-Minuten Tarot-Reading</td></tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <section class="ds-section">
-            <h2 class="section-title text-left">2. Typografie</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">Die Kombination aus einer majestätischen Serifenschrift für Überschriften und einer philosophischen Serife für Texte.</p>
-            
-            <div class="typo-example">
-                <span class="typo-label">Überschriften (Font: Marcellus)</span>
-                <h1 style="font-family: 'Marcellus', serif; font-size: 3rem; margin-bottom: 0.5rem; font-weight: 400; color: var(--text);">Sand der Zeit</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Verwendung: h1, h2, h3, Buttons, Navigation, Eyebrows.</p>
-            </div>
-
-            <div class="typo-example">
-                <span class="typo-label">Fließtext (Font: Cormorant Garamond)</span>
-                <p style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; line-height: 1.6; color: var(--text);">„Das Tarot ist an sich ein Versuch, die Bestandteile des Flusses des Unbewussten darzustellen, und eignet sich daher für eine intuitive Methode, die den Fluss des Lebens verstehen will.“</p>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Verwendung: Absätze, Fließtext, Zitate (kursiv).</p>
+        <!-- III FARBEN -->
+        <section id="farben" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">III</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Farben</h2><p class="section-head__lead">Wüste bei Nacht. Kein Violett, keine Sterne, kein Schnee.</p></header>
+            <div class="ds-grid">
+                <div class="sw"><div class="sw__c" style="background:#120e09; border-bottom:1px solid var(--line)"></div><div class="sw__t"><b>Grund</b><code>#120E09</code><p>Seitenhintergrund, mit feiner Sandkörnung.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#1c1610; border-bottom:1px solid var(--line)"></div><div class="sw__t"><b>Fläche</b><code>#1C1610</code><p>Karten, Kästen, Kartenrücken.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#2a2117"></div><div class="sw__t"><b>Fläche hervorgehoben</b><code>#2A2117</code><p>Beliebtes Angebot, Hover.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#d6a441"></div><div class="sw__t"><b>Gold</b><code>#D6A441</code><p>Die Marke: Ziffern, Preise, Rahmen, Buttons.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#f0c35a"></div><div class="sw__t"><b>Goldschein</b><code>#F0C35A</code><p>Das Leuchten des Logos. Sparsam, einmal pro Ansicht.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#f1e4c6"></div><div class="sw__t"><b>Sand</b><code>#F1E4C6</code><p>Haupttext und Titel.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#b6a07c"></div><div class="sw__t"><b>Sand gedämpft</b><code>#B6A07C</code><p>Fließtext, Beschreibungen.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#9a4426"></div><div class="sw__t"><b>Rost</b><code>#9A4426</code><p>Warmer Akzent: Siegel, Highlights.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#cdaa6e"></div><div class="sw__t"><b>Pergament</b><code>#CDAA6E</code><p>Rand um Thumbnails und große Bilder.</p></div></div>
+                <div class="sw"><div class="sw__c" style="background:#2f4f78"></div><div class="sw__t"><b>Azur</b><code>#2F4F78</code><p>Himmel alter Decks. Nur in Illustrationen.</p></div></div>
             </div>
         </section>
 
-        <section class="ds-section" style="border-bottom: none;">
-            <h2 class="section-title text-left">3. UI Komponenten</h2>
-            
-            <div class="ui-grid">
+        <!-- IV SCHRIFT -->
+        <section id="schrift" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">IV</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Schrift</h2><p class="section-head__lead">Zwei Schriften, nie mehr. Keine serifenlose, auch nicht im Kleingedruckten.</p></header>
+            <div>
+                <div class="type-row"><small>Cinzel Black 900 · Thumbnails</small><span style="font-family:var(--font-display); font-weight:900; font-size:56px; line-height:1; text-transform:uppercase">Retten oder zerstören?</span></div>
+                <div class="type-row"><small>Cinzel 400 · Titel</small><span style="font-family:var(--font-display); font-size:44px; line-height:1.1; letter-spacing:.04em">Was die Karten wissen</span></div>
+                <div class="type-row"><small>Cinzel 600 · Kartennamen</small><span style="font-family:var(--font-display); font-weight:600; font-size:22px; letter-spacing:.12em; text-transform:uppercase">Die Legung</span></div>
+                <div class="type-row"><small>Cinzel 400 · Ziffern</small><span style="font-family:var(--font-display); font-size:20px; letter-spacing:.24em; color:var(--gold)">0 · I · II · III · XVII</span></div>
+                <div class="type-row"><small>Cormorant 500 · Preise</small><span style="font-size:64px; line-height:1; color:var(--gold)">99<small style="font-size:.45em; vertical-align:super; flex:none; font-family:inherit; letter-spacing:0; color:inherit">€</small></span></div>
+                <div class="type-row"><small>Cormorant kursiv · Stimme</small><span style="font-style:italic; font-size:26px; line-height:1.4">Die Karten zeigen dir, was du schon ahnst.</span></div>
+                <div class="type-row"><small>Cormorant 500 · Text</small><span style="font-size:20px; color:var(--ink-muted)">Ein tieferer Blick in Muster, Energie und deinen Weg. Nie kleiner als 16px, nie dünner als 500.</span></div>
+            </div>
+        </section>
+
+        <!-- V BAUSTEINE -->
+        <section id="bausteine" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">V</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Bausteine</h2><p class="section-head__lead">Alles hier ist live, mit genau dem Code der Website.</p></header>
+            <div class="ds-components">
                 <div>
-                    <span class="typo-label">Buttons</span>
-                    <div style="display: flex; flex-direction: column; gap: 1.5rem; align-items: flex-start;">
-                        <a href="#" class="btn btn-primary btn-pulse">Primary Button</a>
-                        <a href="#" class="btn btn-ghost">Ghost Button</a>
-                    </div>
+                    <div class="card card--glow"><div class="card__frame"><span class="card__numeral">0</span><div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600"></div><span class="card__name">Sand der Zeit</span></div></div>
+                    <p class="ds-label">Tarotkarte</p>
                 </div>
-
-                <div>
-                    <span class="typo-label">Trennlinien (Divider)</span>
-                    <div class="ornament-divider" style="margin: 2rem 0;"><span>✦</span></div>
+                <div style="width:280px">
+                    <article class="offer offer--featured"><span class="seal">Beliebt</span><div class="offer__frame">
+                        <span class="offer__numeral">III</span><div class="ornament"><i></i><b></b><i></i></div>
+                        <h3 class="offer__title">Die Legung</h3><span class="offer__meta">60 Minuten · mit Filip</span>
+                        <p class="offer__price">99<small>€</small></p><p class="offer__text">Ein tieferer Blick in Muster, Energie und deinen Weg.</p>
+                        <a href="index.html#tarot" class="btn btn-primary btn-block">Jetzt buchen</a></div></article>
+                    <p class="ds-label">Angebotskarte</p>
                 </div>
-            </div>
-
-            <div style="margin-top: 4rem;">
-                <span class="typo-label">Content Cards (Glas-Effekt)</span>
-                <div class="ui-grid">
-                    <div class="testimonial-card tilt-card" style="margin: 0; width: 100%;">
-                        <div class="testimonial-stars">★★★★★</div>
-                        <p>„Wow!! Vielen Dank für dieses erhellende Reading. Dieses Reading kam von Herzen und lässt mich tief darüber nachdenken, wie ich weitergehe.“</p>
-                        <div class="author">— Beispiel Kunde</div>
-                        <div class="card-glow"></div>
-                    </div>
-                    <div class="pricing-card tilt-card highlighted" style="margin: 0; width: 100%; opacity: 1; transform: none;">
-                        <div class="pricing-card-inner">
-                            <div class="pricing-top-accent"></div>
-                            <span class="most-popular">Beispiel</span>
-                            <h3>Tarot-Reading</h3>
-                            <div class="price">99<span class="currency">€</span></div>
-                            <p>Ein tieferer Blick in Muster, Energie und deinen Weg.</p>
-                            <button class="btn btn-primary btn-block">Aktion</button>
-                        </div>
-                        <div class="card-glow"></div>
-                    </div>
+                <div style="display:flex; flex-direction:column; gap:28px; align-items:center; padding-top:20px">
+                    <a href="#" class="btn btn-primary">Reading buchen</a>
+                    <a href="#" class="btn">Podcast hören</a>
+                    <p class="ds-label" style="margin-top:0">Buttons</p>
+                    <span class="seal" style="position:static; transform:none">Beliebt</span>
+                    <span class="seal" style="position:static; transform:none; background:var(--rost); color:var(--ink)">Ausschnitt</span>
+                    <p class="ds-label" style="margin-top:0">Siegel</p>
+                    <div class="ornament" style="width:220px"><i></i><b></b><i></i></div>
+                    <p class="ds-label" style="margin-top:0">Ornament</p>
                 </div>
             </div>
         </section>
 
+        <!-- VI BILDSPRACHE -->
+        <section id="bilder" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">VI</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Bildsprache</h2></header>
+            <div class="ds-grid">
+                <div class="ds-box"><h3>Kupferstich</h3><p>Alles Illustrierte ist gestochen wie das Logo: feine Schraffur, Goldtinte auf Schwarz, warmer Schein. Auch Gäste, Filip und Jan, nie als normales Foto.</p></div>
+                <div class="ds-box"><h3>Echte Rider-Waite-Karten</h3><p>Die Karten, über die wir sprechen, im Original. Die Zeichnungen von Pamela Colman Smith sind nach unserem Stand gemeinfrei, neuere Neufärbungen nicht.</p></div>
+                <div class="ds-box"><h3>Pergamentrand</h3><p>Thumbnails, Posts und große Bilder bekommen den abgegriffenen Rand. So wird jedes Bild selbst zur alten Karte.</p></div>
+            </div>
+            <div class="ds-box" style="margin-top:20px">
+                <h3>Prompt für KI-Szenen</h3>
+                <p>Für Thumbnails immer ohne Text erzeugen und das untere Drittel freilassen, dort setzt das Thumbnail-Werkzeug die Headline.</p>
+                <p class="prompt">Kupferstich, Gravur, feine Schraffur, Goldtinte auf schwarzem Grund, warmer goldener Lichtschein hinter den Figuren, 16:9, Figuren in der oberen Bildhälfte, unteres Drittel dunkel und leer, kein Text</p>
+            </div>
+        </section>
+
+        <!-- VII LOGO -->
+        <section id="logo" class="ds-sec">
+            <header class="section-head"><span class="section-head__numeral">VII</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Logo</h2><p class="section-head__lead">Immer auf dunklem Grund. Nicht umfärben, nicht verzerren, keinen zweiten Schein.</p></header>
+            <div class="ds-grid">
+                <div class="ds-box dl"><img src="images/web/logo-mark.webp" alt="Logo Original" loading="lazy"><h3>Original</h3><p>1080 × 1080 auf Schwarz</p><a class="btn btn-sm" href="/brand/sdz-logo-original.png" download>Herunterladen</a></div>
+                <div class="ds-box dl"><img src="images/web/logo-card.webp" alt="Logo im Kartenformat" loading="lazy"><h3>Kartenformat</h3><p>7 : 12, für Karte 0</p><a class="btn btn-sm" href="/brand/sdz-logo-karte.png" download>Herunterladen</a></div>
+                <div class="ds-box dl"><img src="images/web/logo-card.webp" alt="Logo transparent" loading="lazy" style="background:var(--surface)"><h3>Transparent</h3><p>Nur auf dunklem Grund verwenden</p><a class="btn btn-sm" href="/brand/sdz-logo-transparent.png" download>Herunterladen</a></div>
+                <div class="ds-box dl"><img src="images/web/logo-mark.webp" alt="Profilbild" loading="lazy" style="border-radius:50%; width:180px; margin:0 auto"><h3>Profilbild</h3><p>Quadratisch für YouTube, Instagram, Spotify</p><a class="btn btn-sm" href="/brand/sdz-avatar.png" download>Herunterladen</a></div>
+            </div>
+        </section>
+
+        <!-- VIII WERKZEUGE -->
+        <section id="werkzeuge" class="ds-sec" style="padding-bottom:120px">
+            <header class="section-head"><span class="section-head__numeral">VIII</span><div class="ornament"><i></i><b></b><i></i></div><h2 class="section-head__title">Werkzeuge</h2></header>
+            <div class="ds-grid">
+                <div class="ds-box"><h3>Thumbnail-Werkzeug</h3><p>Szene hochladen, Headline eintippen, fertiges Thumbnail herunterladen.</p><a class="btn btn-primary btn-sm" href="thumbnail.html" style="margin-top:16px">Öffnen</a></div>
+                <div class="ds-box"><h3>Podcastfolgen</h3><p>Die Website zeigt automatisch die neuesten drei Folgen der YouTube-Playlist und baut sich jeden Morgen neu.</p></div>
+                <div class="ds-box"><h3>Willkommensmail</h3><p>Läuft in Mailjet als Automatisierung nach der Newsletter-Anmeldung: die Drei der Münzen.</p></div>
+            </div>
+        </section>
     </main>
 
-    <div id="toast">In die Zwischenablage kopiert!</div>
-    <script>
-        const copyables = document.querySelectorAll('.copyable');
-        const toast = document.getElementById('toast');
-        let toastTimeout;
-
-        copyables.forEach(el => {
-            el.addEventListener('click', () => {
-                const textToCopy = el.getAttribute('data-copy');
-                if (textToCopy) {
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        el.classList.add('copied');
-                        toast.innerText = textToCopy + ' kopiert!';
-                        toast.classList.add('show');
-                        
-                        setTimeout(() => el.classList.remove('copied'), 1500);
-                        
-                        clearTimeout(toastTimeout);
-                        toastTimeout = setTimeout(() => {
-                            toast.classList.remove('show');
-                        }, 2000);
-                    });
-                }
-            });
-        });
-    </script>
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo"><img src="images/web/logo-mark.webp" alt="" class="footer-logo-icon" width="48" height="48"><span>Sand der Zeit</span></div>
+            <p class="copyright">Designsystem · Stand Oktober 2026</p>
+        </div>
+    </footer>
 </body>
-
 </html>
