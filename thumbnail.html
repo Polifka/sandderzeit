@@ -13,7 +13,7 @@
         .tool .lead { margin-top: 8px; font-style: italic; color: var(--ink-muted); }
         .tool__grid { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 32px; align-items: flex-start; }
         .tool__preview { flex: 999 1 640px; min-width: 0; }
-        .tool__preview canvas.has-cards { touch-action: none; }
+        #out { touch-action: none; }
         .tool__preview canvas { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: var(--card-lift); background: var(--surface); }
         .tool__mini { margin-top: 20px; display: flex; gap: 16px; align-items: center; }
         .tool__mini canvas { width: 246px; height: 138px; border-radius: 4px; }
@@ -49,7 +49,7 @@
                 <canvas id="out" width="1280" height="720" aria-label="Vorschau des Thumbnails"></canvas>
                 <div class="tool__mini">
                     <canvas id="mini" width="246" height="138" aria-hidden="true"></canvas>
-                    <p>So groß sieht man das Thumbnail auf dem Handy. Ist die Headline hier noch lesbar?</p>
+                    <p>Karten und Text kannst du in der großen Vorschau mit der Maus verschieben. Links siehst du, wie groß das Thumbnail auf dem Handy ist.</p>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@
                     <legend>Art</legend>
                     <div class="radio-row">
                         <label><input type="radio" name="variant" value="main" checked> Hauptshow (Pergament)</label>
-                        <label><input type="radio" name="variant" value="highlight"> Highlight (dunkler Rand)</label>
+                        <label><input type="radio" name="variant" value="highlight"> Highlight (Rostrand)</label>
                     </div>
                 </fieldset>
                 <div class="field">
@@ -91,7 +91,7 @@
                 <div class="field">
                     <label for="csize">Kartengröße</label>
                     <input type="range" id="csize" min="70" max="240" value="118">
-                    <button type="button" class="btn btn-sm" id="cardsReset" style="align-self:flex-start; margin-top:6px">Karten neu anordnen</button>
+                    <button type="button" class="btn btn-sm" id="cardsReset" style="align-self:flex-start; margin-top:6px">Karten und Text zurücksetzen</button>
                 </div>
                 <div class="field">
                     <label for="dark">Untere Zone abdunkeln</label>
@@ -114,7 +114,7 @@
         const out = document.getElementById('out'), ctx = out.getContext('2d');
         const mini = document.getElementById('mini').getContext('2d');
         const $ = (id) => document.getElementById(id);
-        let scene = null, cards = [], drag = null;
+        let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null;
         const logo = $('logo');
 
         // ── Hilfen ──
@@ -129,23 +129,25 @@
         const spacedWidth = (c, text, gap) => [...text].reduce((w, ch) => w + c.measureText(ch).width + gap, 0) - gap;
 
         // ── Pergament (einmal erzeugen, immer gleich) ──
-        const parchment = (() => {
+        const makeFrame = (base, darkC, lightC, burnC) => {
             const p = document.createElement('canvas'); p.width = W; p.height = H; const c = p.getContext('2d');
             const r = rng(7);
-            c.fillStyle = '#cdaa6e'; c.fillRect(0, 0, W, H);
+            c.fillStyle = base; c.fillRect(0, 0, W, H);
             for (let i = 0; i < 70; i++) {
                 const x = r() * W, y = r() * H, rad = 40 + r() * 160, dark = r() < 0.55;
                 const g = c.createRadialGradient(x, y, 0, x, y, rad);
-                g.addColorStop(0, dark ? 'rgba(120,82,38,0.16)' : 'rgba(236,208,150,0.18)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+                g.addColorStop(0, dark ? darkC : lightC); g.addColorStop(1, 'rgba(0,0,0,0)');
                 c.fillStyle = g; c.fillRect(x - rad, y - rad, rad * 2, rad * 2);
             }
             const d = c.getImageData(0, 0, W, H), a = d.data;
             for (let i = 0; i < a.length; i += 4) { const n = (r() - 0.5) * 26; a[i] += n; a[i + 1] += n; a[i + 2] += n; }
             c.putImageData(d, 0, 0);
-            const burn = (x0, y0, x1, y1) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, 'rgba(70,44,18,0.75)'); g.addColorStop(1, 'rgba(70,44,18,0)'); c.fillStyle = g; c.fillRect(0, 0, W, H); };
+            const burn = (x0, y0, x1, y1) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, burnC); g.addColorStop(1, 'rgba(70,44,18,0)'); c.fillStyle = g; c.fillRect(0, 0, W, H); };
             burn(0, 0, 36, 0); burn(W, 0, W - 36, 0); burn(0, 0, 0, 36); burn(0, H, 0, H - 36);
             return p;
-        })();
+        };
+        const parchment = makeFrame('#cdaa6e', 'rgba(120,82,38,0.16)', 'rgba(236,208,150,0.18)', 'rgba(70,44,18,0.75)');
+        const rostFrame = makeFrame('#9a4426', 'rgba(60,18,8,0.24)', 'rgba(200,118,76,0.16)', 'rgba(36,12,5,0.8)');
 
         // ── Zeichnen ──
         function draw() {
@@ -153,8 +155,7 @@
             ctx.clearRect(0, 0, W, H);
 
             // Rahmen
-            if (highlight) { ctx.fillStyle = C.ground; ctx.fillRect(0, 0, W, H); }
-            else { ctx.drawImage(parchment, 0, 0); }
+            ctx.drawImage(highlight ? rostFrame : parchment, 0, 0);
 
             // Bühne
             const sx = M, sy = M, sw = W - 2 * M, sh = H - 2 * M;
@@ -192,18 +193,19 @@
             }
             ctx.restore();
             // innere Kante
-            rr(ctx, sx, sy, sw, sh, 14); ctx.strokeStyle = highlight ? C.gold : C.edge; ctx.lineWidth = 2; ctx.stroke();
+            rr(ctx, sx, sy, sw, sh, 14); ctx.strokeStyle = highlight ? '#4a1a0c' : C.edge; ctx.lineWidth = 2; ctx.stroke();
 
             // Headline
             const l1 = $('l1').value.trim().toUpperCase(), l2 = $('l2').value.trim().toUpperCase();
             const fit = (text, max, size) => { do { ctx.font = `900 ${size}px Cinzel`; size -= 2; } while (size > 24 && ctx.measureText(text).width > max); return ctx.font; };
             const line = (text, font, y, color) => {
                 if (!text) return;
+                const cx = W / 2 + textOff.x; y += textOff.y;
                 ctx.font = font; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.lineJoin = 'round';
-                ctx.save(); ctx.shadowColor = C.shadow; ctx.shadowBlur = 30; ctx.fillStyle = C.shadow; ctx.fillText(text, W / 2, y); ctx.restore();
-                ctx.lineWidth = 16; ctx.strokeStyle = C.shadow; ctx.strokeText(text, W / 2, y + 5);
-                ctx.lineWidth = 14; ctx.strokeText(text, W / 2, y);
-                ctx.fillStyle = color; ctx.fillText(text, W / 2, y);
+                ctx.save(); ctx.shadowColor = C.shadow; ctx.shadowBlur = 30; ctx.fillStyle = C.shadow; ctx.fillText(text, cx, y); ctx.restore();
+                ctx.lineWidth = 16; ctx.strokeStyle = C.shadow; ctx.strokeText(text, cx, y + 5);
+                ctx.lineWidth = 14; ctx.strokeText(text, cx, y);
+                ctx.fillStyle = color; ctx.fillText(text, cx, y);
                 ctx.textAlign = 'left';
             };
             const f2 = fit(l2, W - 160, 104); ctx.font = f2; const h2 = ctx.measureText(l2 || 'M').actualBoundingBoxAscent;
@@ -212,15 +214,25 @@
             const y1 = y2 - h2 - 22;
             line(l1, f1, y1, C.ink);
             line(l2, f2, y2, $('color2').value === 'gold' ? C.gold : C.ink);
+            // Rahmen um den Textblock merken (für Drag and Drop)
+            textBox = null;
+            if (l1 || l2) {
+                ctx.font = f1; const m1 = ctx.measureText(l1); ctx.font = f2; const m2 = ctx.measureText(l2 || 'M');
+                const top = (l1 ? y1 - m1.actualBoundingBoxAscent : y2 - m2.actualBoundingBoxAscent) + textOff.y;
+                const bottom = y2 + m2.actualBoundingBoxDescent + textOff.y;
+                const tw = Math.max(l1 ? m1.width : 0, l2 ? m2.width : 0);
+                textBox = { x: W / 2 + textOff.x - tw / 2 - 14, y: top - 14, w: tw + 28, h: bottom - top + 28 };
+                if (drag && drag.type === 'text') { ctx.save(); ctx.setLineDash([8, 6]); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.strokeRect(textBox.x, textBox.y, textBox.w, textBox.h); ctx.restore(); }
+            }
 
             // Siegel
             const ep = parseInt($('ep').value, 10);
-            const sealText = highlight ? 'AUSSCHNITT' : 'SAND DER ZEIT' + (ep > 0 ? ' · ' + roman(ep) : '');
+            const sealText = (highlight ? 'HIGHLIGHT' : 'SAND DER ZEIT') + (ep > 0 ? ' · ' + roman(ep) : '');
             ctx.font = '600 17px Cinzel';
             const s = 56, px = M + 20, py = M + 18, gap = 3.3;
             const tw = spacedWidth(ctx, sealText, gap);
             ctx.save(); rr(ctx, px - 4, py - 4, s + 30 + tw, s + 8, (s + 8) / 2);
-            ctx.fillStyle = highlight ? C.rost : 'rgba(18,14,9,0.8)'; ctx.fill(); ctx.restore();
+            ctx.fillStyle = highlight ? C.rost : 'rgba(18,14,9,0.8)'; ctx.fill(); if (highlight) { ctx.strokeStyle = C.gold; ctx.lineWidth = 1.5; ctx.stroke(); } ctx.restore();
             if (logo.complete && logo.naturalWidth) {
                 ctx.save(); ctx.beginPath(); ctx.arc(px + s / 2, py + s / 2, s / 2, 0, Math.PI * 2); ctx.clip();
                 ctx.drawImage(logo, px, py, s, s); ctx.restore();
@@ -246,21 +258,24 @@
             cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
         });
         $('csize').addEventListener('input', draw);
-        $('cardsReset').addEventListener('click', () => { layoutCards(); draw(); });
+        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; draw(); });
 
         // Drag and Drop in der Vorschau
         const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+        const inText = (p) => !!textBox && p.x >= textBox.x && p.x <= textBox.x + textBox.w && p.y >= textBox.y && p.y <= textBox.y + textBox.h;
         const hit = (p) => { for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i]; if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) return i; } return -1; };
         out.addEventListener('pointerdown', (e) => {
-            const p = toCanvas(e), i = hit(p); if (i < 0) return;
-            const c = cards.splice(i, 1)[0]; cards.push(c);
-            drag = { c, dx: p.x - c.x, dy: p.y - c.y };
+            const p = toCanvas(e), i = hit(p);
+            if (i >= 0) { const c = cards.splice(i, 1)[0]; cards.push(c); drag = { type: 'card', c, dx: p.x - c.x, dy: p.y - c.y }; }
+            else if (inText(p)) { drag = { type: 'text', dx: p.x - textOff.x, dy: p.y - textOff.y }; }
+            else return;
             out.setPointerCapture(e.pointerId); out.style.cursor = 'grabbing'; e.preventDefault(); draw();
         });
         out.addEventListener('pointermove', (e) => {
             const p = toCanvas(e);
-            if (drag) { drag.c.x = Math.round(p.x - drag.dx); drag.c.y = Math.round(p.y - drag.dy); draw(); }
-            else out.style.cursor = hit(p) >= 0 ? 'grab' : 'default';
+            if (drag && drag.type === 'text') { textOff.x = Math.round(p.x - drag.dx); textOff.y = Math.round(p.y - drag.dy); draw(); }
+            else if (drag) { drag.c.x = Math.round(p.x - drag.dx); drag.c.y = Math.round(p.y - drag.dy); draw(); }
+            else out.style.cursor = (hit(p) >= 0 || inText(p)) ? 'grab' : 'default';
         });
         const endDrag = () => { if (drag) { drag = null; out.style.cursor = 'default'; draw(); } };
         out.addEventListener('pointerup', endDrag); out.addEventListener('pointercancel', endDrag);
