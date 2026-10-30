@@ -51,6 +51,30 @@
         .link-btn:hover { color: var(--gold); }
         #arrowEdit { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
         #arrowEdit[hidden] { display: none; }
+        /* KI-Szene */
+        .tool textarea { width: 100%; min-height: 120px; padding: 10px 12px; font: 500 18px/1.4 var(--font-serif); color: var(--ink); background: var(--ground); border: 1px solid var(--line-strong); resize: vertical; }
+        .tool input[type=password] { width: 100%; min-height: 44px; padding: 10px 12px; font: 500 18px var(--font-serif); color: var(--ink); background: var(--ground); border: 1px solid var(--line-strong); }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { padding: 7px 12px; background: var(--ground); border: 1px solid var(--line-strong); border-radius: 999px; font-family: var(--font-display); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); cursor: pointer; }
+        .chip:hover { border-color: var(--gold); color: var(--gold); }
+        .check { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; line-height: 1.4; color: var(--ink); cursor: pointer; }
+        .check input { margin-top: 4px; accent-color: var(--gold); width: 18px; height: 18px; flex: none; }
+        .refs { display: flex; flex-wrap: wrap; gap: 8px; }
+        .refs:empty { display: none; }
+        .ref { position: relative; width: 72px; height: 72px; border: 1px solid var(--line-strong); border-radius: 4px; overflow: hidden; background: #000; }
+        .ref img { width: 100%; height: 100%; object-fit: cover; }
+        .ref button { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; padding: 0; line-height: 20px; border: 0; border-radius: 50%; background: rgba(18,14,9,.85); color: var(--ink); cursor: pointer; }
+        .ki-status { font-size: 15px; line-height: 1.45; color: var(--ink-muted); min-height: 1.45em; }
+        .ki-status.err { color: #e08a6a; }
+        .ki-status.busy::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 8px; border: 2px solid var(--gold); border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -1px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .ki-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .ki-results:empty { display: none; }
+        .ki-res { position: relative; padding: 0; border: 2px solid var(--line); border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; aspect-ratio: 16 / 9; }
+        .ki-res img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .ki-res.on { border-color: var(--gold); box-shadow: var(--glow); }
+        .ki-res.wait { cursor: default; display: grid; place-items: center; font-family: var(--font-display); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); background: var(--ground); }
+        .ki-res a { position: absolute; right: 4px; bottom: 4px; padding: 3px 7px; font-family: var(--font-display); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); background: rgba(18,14,9,.85); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -61,7 +85,7 @@
 
     <main class="tool">
         <h1>Thumbnail-Werkzeug</h1>
-        <p class="lead">Rahmen, Schrift und Siegel kommen automatisch aus dem Designsystem. Geh die Schritte rechts von oben nach unten durch.</p>
+        <p class="lead">Rahmen, Schrift und Siegel kommen automatisch aus dem Designsystem. Erzeug die Szene mit Gemini oder lade eine hoch, dann geh die Schritte rechts von oben nach unten durch.</p>
 
         <div class="tool__grid">
             <div class="tool__preview">
@@ -77,8 +101,40 @@
             </div>
 
             <form class="tool__controls" id="form" onsubmit="return false">
+                <details class="step" id="stepKi" open>
+                    <summary><span>I</span>KI-Szene</summary>
+                    <div class="step__body">
+                        <div class="field">
+                            <label for="kiPrompt">Was soll zu sehen sein?</label>
+                            <textarea id="kiPrompt" placeholder="z. B. Die Frau aus der Vorlage in die Mitte, links im Hintergrund eine Jugendliche mit Tattoos, Pottschnitt und Kopfhörern, rechts ein Geschäftsmann im Anzug mit Kopfhörern"></textarea>
+                        </div>
+                        <div class="chips" aria-label="Vorlagen">
+                            <button type="button" class="chip" data-preset="stil">Hausstil</button>
+                            <button type="button" class="chip" data-preset="drei">Drei Personen</button>
+                            <button type="button" class="chip" data-preset="symbol">Symbol + Person</button>
+                            <button type="button" class="chip" data-preset="engel">Engel und Teufel</button>
+                            <button type="button" class="chip" data-preset="aendern">Nur ändern</button>
+                        </div>
+                        <label class="drop"><input type="file" id="kiRefs" accept="image/*" multiple><b>Referenzbilder (optional)</b><small>Gast, Person, Symbol · bis zu 3</small></label>
+                        <div class="refs" id="kiRefList"></div>
+                        <label class="check"><input type="checkbox" id="kiUseScene"><span>Aktuelle Szene als Vorlage mitschicken<br><small class="hint">So arbeitest du wie im Chat weiter: Szene wählen, Änderung beschreiben, erzeugen.</small></span></label>
+                        <label class="check"><input type="checkbox" id="kiRules" checked><span>Thumbnail-Regeln anhängen<br><small class="hint">16:9, kein Text, unteres Drittel ruhig und dunkel für die Headline.</small></span></label>
+                        <div class="two">
+                            <div class="field"><label for="kiCount">Varianten</label><select id="kiCount"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></div>
+                            <div class="field"><label for="kiSize">Auflösung</label><select id="kiSize"><option value="1K">1K · schnell</option><option value="2K" selected>2K</option><option value="4K">4K</option></select></div>
+                        </div>
+                        <div class="field">
+                            <label for="kiPass">Passwort</label>
+                            <input type="password" id="kiPass" autocomplete="current-password" placeholder="Werkzeug-Passwort">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="kiGo" style="align-self:flex-start">Szene erzeugen</button>
+                        <p class="ki-status" id="kiStatus" role="status" aria-live="polite"></p>
+                        <div class="ki-results" id="kiResults"></div>
+                    </div>
+                </details>
+
                 <details class="step" open>
-                    <summary><span>I</span>Szene</summary>
+                    <summary><span>II</span>Szene</summary>
                     <div class="step__body">
                         <label class="drop"><input type="file" id="scene" accept="image/*"><b>Szene wählen oder hierher ziehen</b><small>16:9, ohne Text, unteres Drittel dunkel</small></label>
                         <div class="field">
@@ -90,7 +146,7 @@
                 </details>
 
                 <details class="step" open>
-                    <summary><span>II</span>Headline</summary>
+                    <summary><span>III</span>Headline</summary>
                     <div class="step__body">
                         <div class="field"><label for="l1">Zeile 1</label><input type="text" id="l1" value="Die hermetischen Gesetze"></div>
                         <div class="field"><label for="l2">Zeile 2 · groß</label><input type="text" id="l2" value="Entschlüsselt"></div>
@@ -102,7 +158,7 @@
                 </details>
 
                 <details class="step" open>
-                    <summary><span>III</span>Art &amp; Siegel</summary>
+                    <summary><span>IV</span>Art &amp; Siegel</summary>
                     <div class="step__body">
                         <div class="seg" role="radiogroup" aria-label="Art">
                             <label><input type="radio" name="variant" value="main" checked>Hauptshow</label>
@@ -117,7 +173,7 @@
                 </details>
 
                 <details class="step">
-                    <summary><span>IV</span>Tarotkarten</summary>
+                    <summary><span>V</span>Tarotkarten</summary>
                     <div class="step__body">
                         <label class="drop"><input type="file" id="cards" accept="image/*" multiple><b>Bis zu 3 Karten wählen</b><small>oder hierher ziehen</small></label>
                         <div class="field">
@@ -128,7 +184,7 @@
                 </details>
 
                 <details class="step" id="stepArrows">
-                    <summary><span>V</span>Pfeile</summary>
+                    <summary><span>VI</span>Pfeile</summary>
                     <div class="step__body">
                         <button type="button" class="btn btn-sm" id="arrowAdd" style="align-self:flex-start">Pfeil hinzufügen</button>
                         <span class="hint" id="arrowInfo"></span>
@@ -329,7 +385,7 @@
         }
 
         // ── Eingaben ──
-        $('scene').addEventListener('change', async (e) => { if (e.target.files[0]) { scene = await loadImg(e.target.files[0]); draw(); } });
+        $('scene').addEventListener('change', async (e) => { if (e.target.files[0]) { scene = await loadImg(e.target.files[0]); sceneSrc = null; kiResults.forEach((x) => x.el.classList.remove('on')); draw(); } });
         const layoutCards = () => {
             const cw = +$('csize').value, gap = 16, total = cards.length * cw + (cards.length - 1) * gap;
             cards.forEach((c, i) => { c.x = (W - total) / 2 + i * (cw + gap); c.y = M + 18; });
@@ -400,11 +456,123 @@
         // Upload-Felder: Dateiname anzeigen, beim Darüberziehen hervorheben
         document.querySelectorAll('.drop input').forEach((inp) => {
             const box = inp.parentElement, b = box.querySelector('b');
-            inp.addEventListener('change', () => { const n = inp.files.length; if (n) b.textContent = n > 1 ? `${n} Karten gewählt` : inp.files[0].name; });
+            if (inp.id !== 'kiRefs') inp.addEventListener('change', () => { const n = inp.files.length; if (n) b.textContent = n > 1 ? `${n} Karten gewählt` : inp.files[0].name; });
             ['dragenter', 'dragover'].forEach((ev) => inp.addEventListener(ev, () => box.classList.add('over')));
             ['dragleave', 'drop'].forEach((ev) => inp.addEventListener(ev, () => box.classList.remove('over')));
         });
         syncArrowUI();
+
+        // ── KI-Szene mit Gemini ──
+        // Der Browser spricht nur mit api/gemini.php auf unserem Server. Der API Key bleibt dort.
+        const KI_RULES = 'Format 16:9 Querformat. Absolut kein Text, keine Schrift, keine Buchstaben, kein Logo, kein Wasserzeichen. Hauptmotiv in der oberen Bildhälfte, das untere Drittel ruhig, dunkel und frei, dort kommt später die Headline hin. Dunkle Grundstimmung, warmes goldenes Licht, goldener Rauch und Funken, hoher Kontrast, gut lesbar auch als kleines YouTube-Thumbnail.';
+        const KI_PRESETS = {
+            stil: 'Kupferstich, Gravur, feine Schraffur, Goldtinte auf schwarzem Grund, warmer goldener Lichtschein hinter den Figuren.',
+            drei: 'Die Person aus dem Referenzbild groß in der Mitte, Schwarzweiß-Porträt. Links im Hintergrund eine weitere Person, rechts im Hintergrund eine weitere Person, beide etwas kleiner und leicht unscharf. Dazwischen goldener Rauch und Funken. ',
+            symbol: 'Links ein großes goldenes, mystisches Symbol als Relief mit warmem Glühen. Rechts die Person aus dem Referenzbild als Schwarzweiß-Porträt vor dunklem Rauch. Goldene Funken verbinden beide Seiten. ',
+            engel: 'Die Person aus dem Referenzbild mittig, links ein weißer Engelsflügel mit Heiligenschein, rechts ein roter Teufelsflügel mit Horn. Zwei Tarotkarten schweben über dem Kopf. Gezeichneter Stil mit Schraffur, warmes Gegenlicht. ',
+            aendern: 'Behalte Bild, Personen, Licht und Stil der Vorlage exakt bei und ändere nur Folgendes: ',
+        };
+        let kiRefs = [], kiResults = [], sceneSrc = null, kiBusy = false;
+        const store = { get: (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+        $('kiPass').value = store.get('sdz-ki-pass');
+
+        // Bild verkleinern und als Base64-JPEG für die Anfrage vorbereiten
+        const toPayload = (img, max = 1600) => {
+            const s = Math.min(1, max / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+            const c = document.createElement('canvas'); c.width = Math.round((img.naturalWidth || img.width) * s); c.height = Math.round((img.naturalHeight || img.height) * s);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            return { mime: 'image/jpeg', data: c.toDataURL('image/jpeg', 0.9).split(',')[1] };
+        };
+        const fromPayload = (p) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = `data:${p.mime};base64,${p.data}`; });
+
+        const renderRefs = () => {
+            const list = $('kiRefList'); list.innerHTML = '';
+            kiRefs.forEach((r, i) => {
+                const d = document.createElement('div'); d.className = 'ref';
+                d.innerHTML = `<img src="data:${r.mime};base64,${r.data}" alt="Referenz ${i + 1}"><button type="button" aria-label="Referenz entfernen">×</button>`;
+                d.querySelector('button').addEventListener('click', () => { kiRefs.splice(i, 1); renderRefs(); });
+                list.appendChild(d);
+            });
+        };
+        $('kiRefs').addEventListener('change', async (e) => {
+            const files = [...e.target.files].slice(0, 3 - kiRefs.length);
+            for (const f of files) kiRefs.push(toPayload(await loadImg(f)));
+            e.target.value = ''; renderRefs();
+        });
+
+        document.querySelectorAll('.chip[data-preset]').forEach((b) => b.addEventListener('click', () => {
+            const t = $('kiPrompt'), add = KI_PRESETS[b.dataset.preset];
+            if (b.dataset.preset === 'aendern') $('kiUseScene').checked = true;
+            t.value = t.value.trim() ? (b.dataset.preset === 'stil' ? t.value.trim() + ' ' + add : add + t.value.trim()) : add;
+            t.focus(); t.setSelectionRange(t.value.length, t.value.length);
+        }));
+
+        const status = (msg, kind = '') => { const s = $('kiStatus'); s.textContent = msg; s.className = 'ki-status' + (kind ? ' ' + kind : ''); };
+
+        const useResult = async (r) => {
+            scene = await fromPayload(r); sceneSrc = r;
+            kiResults.forEach((x) => { x.el.classList.toggle('on', x === r); });
+            $('scene').parentElement.querySelector('b').textContent = 'KI-Szene übernommen';
+            $('kiUseScene').checked = true;
+            draw();
+        };
+
+        const addResultTile = () => {
+            const el = document.createElement('button'); el.type = 'button'; el.className = 'ki-res wait'; el.textContent = 'Wird gemalt …';
+            $('kiResults').prepend(el); return el;
+        };
+        const fillTile = (el, r) => {
+            r.el = el; el.className = 'ki-res'; el.textContent = '';
+            el.innerHTML = `<img src="data:${r.mime};base64,${r.data}" alt="KI-Variante">`;
+            const a = document.createElement('a'); a.href = `data:${r.mime};base64,${r.data}`; a.download = `sdz-ki-szene-${Date.now()}.${r.mime.includes('png') ? 'png' : 'jpg'}`; a.textContent = 'Laden';
+            a.addEventListener('click', (e) => e.stopPropagation()); el.appendChild(a);
+            el.title = 'Als Szene übernehmen';
+            el.addEventListener('click', () => useResult(r));
+            kiResults.unshift(r);
+            // höchstens 12 Ergebnisse im Speicher halten
+            while (kiResults.length > 12) { const old = kiResults.pop(); old.el.remove(); }
+        };
+
+        $('kiGo').addEventListener('click', async () => {
+            if (kiBusy) return;
+            const pass = $('kiPass').value.trim();
+            let prompt = $('kiPrompt').value.trim();
+            if (!prompt) { status('Beschreib zuerst, was zu sehen sein soll.', 'err'); $('kiPrompt').focus(); return; }
+            if (!pass) { status('Bitte das Werkzeug-Passwort eintragen.', 'err'); $('kiPass').focus(); return; }
+            store.set('sdz-ki-pass', pass);
+
+            const images = [];
+            if ($('kiUseScene').checked) {
+                if (!scene) { status('Es gibt noch keine Szene, die mitgeschickt werden kann. Haken raus oder erst eine Szene wählen.', 'err'); return; }
+                images.push(sceneSrc || toPayload(scene));
+            }
+            images.push(...kiRefs);
+            if (images.length) {
+                const hints = [];
+                if ($('kiUseScene').checked) hints.push('Bild 1 ist die aktuelle Vorlage, die bearbeitet werden soll.');
+                if (kiRefs.length) hints.push(`${$('kiUseScene').checked ? 'Die weiteren Bilder sind' : 'Die Bilder sind'} Referenzen für Personen oder Motive. Gesichter und Kleidung der Personen aus den Referenzen erkennbar übernehmen.`);
+                prompt = hints.join(' ') + '\n\n' + prompt;
+            }
+            if ($('kiRules').checked) prompt += '\n\n' + KI_RULES;
+
+            const n = +$('kiCount').value, size = $('kiSize').value;
+            kiBusy = true; $('kiGo').disabled = true;
+            status(`Gemini malt ${n > 1 ? n + ' Varianten' : 'die Szene'}. Das dauert meist 20 bis 60 Sekunden.`, 'busy');
+            const tiles = Array.from({ length: n }, addResultTile);
+            let ok = 0, lastErr = '', left = null;
+            await Promise.all(tiles.map(async (el) => {
+                try {
+                    const res = await fetch('api/gemini.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pass, prompt, images, size }) });
+                    const json = await res.json().catch(() => ({ error: `Server antwortet nicht korrekt (HTTP ${res.status}). Läuft die Seite auf All-Inkl? Lokal mit Vite gibt es kein PHP.` }));
+                    if (!res.ok || json.error) throw new Error(json.error || `HTTP ${res.status}`);
+                    fillTile(el, json.images[0]); ok++; if (json.left != null) left = json.left;
+                    if (ok === 1) useResult(json.images[0]);
+                } catch (err) { el.remove(); lastErr = err.message; }
+            }));
+            kiBusy = false; $('kiGo').disabled = false;
+            if (ok) status(`${ok === 1 ? 'Fertig, die Szene ist übernommen.' : ok + ' Varianten fertig, die erste ist übernommen.'} Klick auf ein Bild, um zu wechseln.${left != null ? ` Heute noch ${left} Bilder frei.` : ''}${lastErr ? ' Hinweis: ' + lastErr : ''}`);
+            else status(lastErr || 'Es kam kein Bild zurück.', 'err');
+        });
 
         const fileName = (ext) => {
             const base = ($('l2').value || $('l1').value || 'thumbnail').toLowerCase().normalize('NFKD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
