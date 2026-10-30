@@ -8,30 +8,49 @@
     <link rel="icon" href="images/web/favicon.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <style>
-        .tool { max-width: 1320px; margin: 0 auto; padding: 120px 24px 80px; }
+        .tool { max-width: 1360px; margin: 0 auto; padding: 110px 24px 80px; }
         .tool h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; letter-spacing: .04em; color: var(--ink); }
-        .tool .lead { margin-top: 8px; font-style: italic; color: var(--ink-muted); }
-        .tool__grid { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 32px; align-items: flex-start; }
-        .tool__preview { flex: 999 1 640px; min-width: 0; }
-        #out { touch-action: none; }
-        .tool__preview canvas { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: var(--card-lift); background: var(--surface); }
-        .tool__mini { margin-top: 20px; display: flex; gap: 16px; align-items: center; }
-        .tool__mini canvas { width: 246px; height: 138px; border-radius: 4px; }
-        .tool__mini p { font-size: 16px; color: var(--ink-muted); }
-        .tool__controls { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 18px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-card); padding: 24px; }
+        .tool .lead { margin-top: 6px; font-style: italic; color: var(--ink-muted); }
+        .tool__grid { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 28px; align-items: flex-start; }
+        .tool__preview { flex: 999 1 640px; min-width: 0; position: sticky; top: 88px; }
+        @media (max-width: 1000px) { .tool__preview { position: static; } }
+        #out { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: var(--card-lift); background: var(--surface); touch-action: none; }
+        .bar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 16px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); }
+        .bar canvas { width: 160px; height: 90px; border-radius: 4px; flex: none; }
+        .bar p { flex: 1 1 200px; font-size: 16px; line-height: 1.45; color: var(--ink-muted); }
+        .bar .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .tool__controls { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+        .step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); }
+        .step[open] { border-color: var(--line-strong); }
+        .step summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px; min-height: 54px; padding: 0 20px; font-family: var(--font-display); font-size: 14px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); }
+        .step summary::-webkit-details-marker { display: none; }
+        .step summary span { min-width: 30px; font-size: 13px; letter-spacing: .2em; color: var(--gold); }
+        .step summary::after { content: ""; margin-left: auto; width: 8px; height: 8px; border-right: 1px solid var(--gold); border-bottom: 1px solid var(--gold); transform: rotate(45deg); transition: transform .2s; }
+        .step[open] summary::after { transform: rotate(-135deg); }
+        .step summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+        .step__body { display: flex; flex-direction: column; gap: 16px; padding: 4px 20px 20px; }
         .field { display: flex; flex-direction: column; gap: 6px; }
-        .field label, .field legend { font-family: var(--font-display); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
-        .field input[type=text], .field input[type=number], .field select {
-            font: 500 18px var(--font-serif); color: var(--ink); background: var(--ground);
-            border: 1px solid var(--line-strong); padding: 10px 12px; min-height: 44px; }
-        .field input[type=file] { font: 500 16px var(--font-serif); color: var(--ink-muted); }
-        .field small { font-size: 15px; color: var(--ink-muted); }
-        .field input[type=range] { accent-color: var(--gold); }
-        fieldset.field { border: 0; }
-        .radio-row { display: flex; gap: 16px; flex-wrap: wrap; }
-        .radio-row label { font-family: var(--font-serif); font-size: 18px; letter-spacing: 0; text-transform: none; color: var(--ink); display: flex; gap: 6px; align-items: center; }
-        .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-        .empty { padding: 60px 24px; text-align: center; color: var(--ink-muted); font-style: italic; }
+        .field label, .lbl { font-family: var(--font-display); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+        .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+        output { font-size: 15px; color: var(--ink-muted); }
+        .tool input[type=text], .tool input[type=number], .tool select { width: 100%; min-height: 44px; padding: 10px 12px; font: 500 18px var(--font-serif); color: var(--ink); background: var(--ground); border: 1px solid var(--line-strong); }
+        .tool input[type=range] { width: 100%; accent-color: var(--gold); }
+        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 92px; padding: 16px; text-align: center; background: var(--ground); border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; transition: background .2s; }
+        .drop:hover, .drop.over { background: var(--surface-raised); }
+        .drop input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .drop b { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+        .drop small { font-size: 15px; color: var(--ink-muted); }
+        .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line-strong); }
+        .seg label { position: relative; display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 6px; text-align: center; font-family: var(--font-display); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); cursor: pointer; }
+        .seg input { position: absolute; opacity: 0; }
+        .seg label:has(input:checked) { background: var(--gold); color: var(--on-gold); }
+        .seg label:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+        .hint { font-size: 15px; line-height: 1.45; color: var(--ink-muted); }
+        .link-btn { align-self: flex-start; padding: 8px 0; background: none; border: 0; font-family: var(--font-display); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-muted); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+        .link-btn:hover { color: var(--gold); }
+        #arrowEdit { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+        #arrowEdit[hidden] { display: none; }
     </style>
 </head>
 <body>
@@ -42,82 +61,89 @@
 
     <main class="tool">
         <h1>Thumbnail-Werkzeug</h1>
-        <p class="lead">Szene hochladen, Headline eintippen, Bild herunterladen. Rahmen, Schrift und Siegel kommen automatisch aus dem Designsystem.</p>
+        <p class="lead">Rahmen, Schrift und Siegel kommen automatisch aus dem Designsystem. Geh die Schritte rechts von oben nach unten durch.</p>
 
         <div class="tool__grid">
             <div class="tool__preview">
                 <canvas id="out" width="1280" height="720" aria-label="Vorschau des Thumbnails"></canvas>
-                <div class="tool__mini">
+                <div class="bar">
                     <canvas id="mini" width="246" height="138" aria-hidden="true"></canvas>
-                    <p>Karten, Text und Pfeile kannst du in der großen Vorschau mit der Maus verschieben. Links siehst du, wie groß das Thumbnail auf dem Handy ist.</p>
+                    <p>Text, Karten und Pfeile in der Vorschau mit der Maus verschieben. Links: so groß ist das Thumbnail auf dem Handy.</p>
+                    <div class="actions">
+                        <button type="button" class="btn btn-primary" id="dlPng">PNG laden</button>
+                        <button type="button" class="btn" id="dlJpg">JPG</button>
+                    </div>
                 </div>
             </div>
 
             <form class="tool__controls" id="form" onsubmit="return false">
-                <div class="field">
-                    <label for="scene">Szene (ohne Text)</label>
-                    <input type="file" id="scene" accept="image/*">
-                    <small>Am besten 16:9, mindestens 1280 × 720, unteres Drittel dunkel und ruhig.</small>
-                </div>
-                <div class="field">
-                    <label for="l1">Zeile 1</label>
-                    <input type="text" id="l1" value="Die hermetischen Gesetze">
-                </div>
-                <div class="field">
-                    <label for="l2">Zeile 2 (groß)</label>
-                    <input type="text" id="l2" value="Entschlüsselt">
-                </div>
-                <div class="field">
-                    <label for="tsize">Schriftgröße</label>
-                    <input type="range" id="tsize" min="50" max="150" value="100">
-                </div>
-                <div class="field">
-                    <label for="color2">Farbe Zeile 2</label>
-                    <select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select>
-                </div>
-                <fieldset class="field">
-                    <legend>Art</legend>
-                    <div class="radio-row">
-                        <label><input type="radio" name="variant" value="main" checked> Hauptshow (Pergament)</label>
-                        <label><input type="radio" name="variant" value="highlight"> Highlight (Rostrand)</label>
+                <details class="step" open>
+                    <summary><span>I</span>Szene</summary>
+                    <div class="step__body">
+                        <label class="drop"><input type="file" id="scene" accept="image/*"><b>Szene wählen oder hierher ziehen</b><small>16:9, ohne Text, unteres Drittel dunkel</small></label>
+                        <div class="field">
+                            <div class="row"><label for="dark">Untere Zone abdunkeln</label><output data-for="dark"></output></div>
+                            <input type="range" id="dark" min="0" max="100" value="60">
+                            <span class="hint">Ganz nach rechts, wenn unten schon Schrift im Bild ist.</span>
+                        </div>
                     </div>
-                </fieldset>
-                <div class="field">
-                    <label for="ep">Folge (optional)</label>
-                    <input type="number" id="ep" min="1" max="3999" placeholder="z. B. 25">
-                    <small>Wird automatisch als römische Ziffer ins Siegel gesetzt.</small>
-                </div>
-                <div class="field">
-                    <label for="cards">Tarotkarten (optional, bis zu 3)</label>
-                    <input type="file" id="cards" accept="image/*" multiple>
-                    <small>Erscheinen im Goldrahmen und lassen sich in der Vorschau mit der Maus verschieben.</small>
-                </div>
-                <div class="field">
-                    <label for="csize">Kartengröße</label>
-                    <input type="range" id="csize" min="70" max="240" value="118">
-                    <button type="button" class="btn btn-sm" id="cardsReset" style="align-self:flex-start; margin-top:6px">Karten und Text zurücksetzen</button>
-                </div>
-                <div class="field">
-                    <label>Pfeile</label>
-                    <button type="button" class="btn btn-sm" id="arrowAdd" style="align-self:flex-start">Pfeil hinzufügen</button>
-                    <small id="arrowInfo">Noch kein Pfeil.</small>
-                    <label for="arot" style="margin-top:8px">Drehung</label>
-                    <input type="range" id="arot" min="0" max="359" value="20">
-                    <label for="asize">Pfeilgröße</label>
-                    <input type="range" id="asize" min="40" max="250" value="100">
-                    <label for="acolor">Pfeilfarbe</label>
-                    <select id="acolor"><option value="gold">Gold</option><option value="ink">Sand</option><option value="rost">Rost</option></select>
-                    <button type="button" class="btn btn-sm" id="arrowDel" style="align-self:flex-start; margin-top:6px">Pfeil löschen</button>
-                </div>
-                <div class="field">
-                    <label for="dark">Untere Zone abdunkeln</label>
-                    <input type="range" id="dark" min="0" max="100" value="60">
-                    <small>Höher, wenn unten schon Schrift im Bild ist oder die Headline unruhig wirkt.</small>
-                </div>
-                <div class="actions">
-                    <button type="button" class="btn btn-primary" id="dlPng">PNG herunterladen</button>
-                    <button type="button" class="btn" id="dlJpg">JPG (unter 2 MB)</button>
-                </div>
+                </details>
+
+                <details class="step" open>
+                    <summary><span>II</span>Headline</summary>
+                    <div class="step__body">
+                        <div class="field"><label for="l1">Zeile 1</label><input type="text" id="l1" value="Die hermetischen Gesetze"></div>
+                        <div class="field"><label for="l2">Zeile 2 · groß</label><input type="text" id="l2" value="Entschlüsselt"></div>
+                        <div class="two">
+                            <div class="field"><label for="color2">Farbe Zeile 2</label><select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select></div>
+                            <div class="field"><div class="row"><label for="tsize">Größe</label><output data-for="tsize"></output></div><input type="range" id="tsize" min="50" max="150" value="100" style="margin-top:14px"></div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="step" open>
+                    <summary><span>III</span>Art &amp; Siegel</summary>
+                    <div class="step__body">
+                        <div class="seg" role="radiogroup" aria-label="Art">
+                            <label><input type="radio" name="variant" value="main" checked>Hauptshow</label>
+                            <label><input type="radio" name="variant" value="highlight">Highlight</label>
+                        </div>
+                        <div class="field">
+                            <label for="ep">Folge (optional)</label>
+                            <input type="number" id="ep" min="1" max="3999" placeholder="z. B. 25">
+                            <span class="hint">Erscheint als römische Ziffer im Siegel.</span>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="step">
+                    <summary><span>IV</span>Tarotkarten</summary>
+                    <div class="step__body">
+                        <label class="drop"><input type="file" id="cards" accept="image/*" multiple><b>Bis zu 3 Karten wählen</b><small>oder hierher ziehen</small></label>
+                        <div class="field">
+                            <div class="row"><label for="csize">Kartengröße</label><output data-for="csize" data-unit=" px"></output></div>
+                            <input type="range" id="csize" min="70" max="240" value="118">
+                        </div>
+                    </div>
+                </details>
+
+                <details class="step" id="stepArrows">
+                    <summary><span>V</span>Pfeile</summary>
+                    <div class="step__body">
+                        <button type="button" class="btn btn-sm" id="arrowAdd" style="align-self:flex-start">Pfeil hinzufügen</button>
+                        <span class="hint" id="arrowInfo"></span>
+                        <div id="arrowEdit" hidden>
+                            <div class="field"><div class="row"><label for="arot">Drehung</label><output data-for="arot" data-unit="°"></output></div><input type="range" id="arot" min="0" max="359" value="20"></div>
+                            <div class="field"><div class="row"><label for="asize">Größe</label><output data-for="asize"></output></div><input type="range" id="asize" min="40" max="250" value="100"></div>
+                            <div class="two">
+                                <div class="field"><label for="acolor">Farbe</label><select id="acolor"><option value="gold">Gold</option><option value="ink">Sand</option><option value="rost">Rost</option></select></div>
+                                <div class="field" style="justify-content:flex-end"><button type="button" class="btn btn-sm" id="arrowDel">Löschen</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <button type="button" class="link-btn" id="cardsReset">Positionen und Größe zurücksetzen</button>
             </form>
         </div>
     </main>
@@ -314,7 +340,7 @@
             cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
         });
         $('csize').addEventListener('input', draw);
-        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; $('tsize').value = 100; draw(); });
+        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; $('tsize').value = 100; updateOutputs(); draw(); });
 
         // Drag and Drop in der Vorschau
         const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
@@ -358,14 +384,26 @@
             const a = arrows[sel], on = !!a;
             ['arot', 'asize', 'acolor', 'arrowDel'].forEach((id) => { $(id).disabled = !on; });
             if (a) { $('arot').value = a.rot; $('asize').value = Math.round(a.scale * 100); $('acolor').value = a.color; }
-            $('arrowInfo').textContent = on ? `Pfeil ${sel + 1} von ${arrows.length} ausgewählt. In der Vorschau verschieben, hier drehen und skalieren.`
-                : arrows.length ? 'Klick auf einen Pfeil in der Vorschau, um ihn auszuwählen.' : 'Noch kein Pfeil.';
+            $('arrowInfo').textContent = on ? `Pfeil ${sel + 1} von ${arrows.length} ausgewählt. Verschieben in der Vorschau.`
+                : arrows.length ? 'Klick auf einen Pfeil in der Vorschau, um ihn zu bearbeiten.' : 'Füge einen Pfeil hinzu und zieh ihn in der Vorschau an die richtige Stelle.';
+            $('arrowEdit').hidden = !on; if (on) $('stepArrows').open = true;
+            updateOutputs();
         };
         $('arrowAdd').addEventListener('click', () => { arrows.push({ x: W / 2, y: H / 2, rot: 20, scale: 1, color: 'gold' }); sel = arrows.length - 1; syncArrowUI(); draw(); });
         $('arrowDel').addEventListener('click', () => { if (sel >= 0) { arrows.splice(sel, 1); sel = -1; syncArrowUI(); draw(); } });
         $('arot').addEventListener('input', () => { if (arrows[sel]) { arrows[sel].rot = +$('arot').value; draw(); } });
         $('asize').addEventListener('input', () => { if (arrows[sel]) { arrows[sel].scale = +$('asize').value / 100; draw(); } });
         $('acolor').addEventListener('change', () => { if (arrows[sel]) { arrows[sel].color = $('acolor').value; draw(); } });
+        // Werte neben den Reglern
+        function updateOutputs() { document.querySelectorAll('output[data-for]').forEach((o) => { o.textContent = $(o.dataset.for).value + (o.dataset.unit || ' %'); }); }
+        document.querySelectorAll('.tool input[type=range]').forEach((r) => r.addEventListener('input', updateOutputs));
+        // Upload-Felder: Dateiname anzeigen, beim Darüberziehen hervorheben
+        document.querySelectorAll('.drop input').forEach((inp) => {
+            const box = inp.parentElement, b = box.querySelector('b');
+            inp.addEventListener('change', () => { const n = inp.files.length; if (n) b.textContent = n > 1 ? `${n} Karten gewählt` : inp.files[0].name; });
+            ['dragenter', 'dragover'].forEach((ev) => inp.addEventListener(ev, () => box.classList.add('over')));
+            ['dragleave', 'drop'].forEach((ev) => inp.addEventListener(ev, () => box.classList.remove('over')));
+        });
         syncArrowUI();
 
         const fileName = (ext) => {
