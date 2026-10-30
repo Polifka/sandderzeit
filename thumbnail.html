@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Sand der Zeit · Thumbnail-Werkzeug</title>
+    <link rel="icon" href="images/web/favicon.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tool { max-width: 1320px; margin: 0 auto; padding: 120px 24px 80px; }
+        .tool h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; letter-spacing: .04em; color: var(--ink); }
+        .tool .lead { margin-top: 8px; font-style: italic; color: var(--ink-muted); }
+        .tool__grid { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 32px; align-items: flex-start; }
+        .tool__preview { flex: 999 1 640px; min-width: 0; }
+        .tool__preview canvas { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: var(--card-lift); background: var(--surface); }
+        .tool__mini { margin-top: 20px; display: flex; gap: 16px; align-items: center; }
+        .tool__mini canvas { width: 246px; height: 138px; border-radius: 4px; }
+        .tool__mini p { font-size: 16px; color: var(--ink-muted); }
+        .tool__controls { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 18px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-card); padding: 24px; }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label, .field legend { font-family: var(--font-display); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+        .field input[type=text], .field input[type=number], .field select {
+            font: 500 18px var(--font-serif); color: var(--ink); background: var(--ground);
+            border: 1px solid var(--line-strong); padding: 10px 12px; min-height: 44px; }
+        .field input[type=file] { font: 500 16px var(--font-serif); color: var(--ink-muted); }
+        .field small { font-size: 15px; color: var(--ink-muted); }
+        .field input[type=range] { accent-color: var(--gold); }
+        fieldset.field { border: 0; }
+        .radio-row { display: flex; gap: 16px; flex-wrap: wrap; }
+        .radio-row label { font-family: var(--font-serif); font-size: 18px; letter-spacing: 0; text-transform: none; color: var(--ink); display: flex; gap: 6px; align-items: center; }
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .empty { padding: 60px 24px; text-align: center; color: var(--ink-muted); font-style: italic; }
+    </style>
+</head>
+<body>
+    <header id="main-header" class="scrolled">
+        <a href="index.html" class="brand"><img src="images/web/logo-nav.webp" alt="" width="26" height="44"><span>Sand der Zeit</span></a>
+    </header>
+
+    <main class="tool">
+        <h1>Thumbnail-Werkzeug</h1>
+        <p class="lead">Szene hochladen, Headline eintippen, Bild herunterladen. Rahmen, Schrift und Siegel kommen automatisch aus dem Designsystem.</p>
+
+        <div class="tool__grid">
+            <div class="tool__preview">
+                <canvas id="out" width="1280" height="720" aria-label="Vorschau des Thumbnails"></canvas>
+                <div class="tool__mini">
+                    <canvas id="mini" width="246" height="138" aria-hidden="true"></canvas>
+                    <p>So groß sieht man das Thumbnail auf dem Handy. Ist die Headline hier noch lesbar?</p>
+                </div>
+            </div>
+
+            <form class="tool__controls" id="form" onsubmit="return false">
+                <div class="field">
+                    <label for="scene">Szene (ohne Text)</label>
+                    <input type="file" id="scene" accept="image/*">
+                    <small>Am besten 16:9, mindestens 1280 × 720, unteres Drittel dunkel und ruhig.</small>
+                </div>
+                <div class="field">
+                    <label for="l1">Zeile 1</label>
+                    <input type="text" id="l1" value="Die hermetischen Gesetze">
+                </div>
+                <div class="field">
+                    <label for="l2">Zeile 2 (groß)</label>
+                    <input type="text" id="l2" value="Entschlüsselt">
+                </div>
+                <div class="field">
+                    <label for="color2">Farbe Zeile 2</label>
+                    <select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select>
+                </div>
+                <fieldset class="field">
+                    <legend>Art</legend>
+                    <div class="radio-row">
+                        <label><input type="radio" name="variant" value="main" checked> Hauptshow (Pergament)</label>
+                        <label><input type="radio" name="variant" value="highlight"> Highlight (dunkler Rand)</label>
+                    </div>
+                </fieldset>
+                <div class="field">
+                    <label for="ep">Folge (optional)</label>
+                    <input type="number" id="ep" min="1" max="3999" placeholder="z. B. 25">
+                    <small>Wird automatisch als römische Ziffer ins Siegel gesetzt.</small>
+                </div>
+                <div class="field">
+                    <label for="cards">Tarotkarten (optional, bis zu 3)</label>
+                    <input type="file" id="cards" accept="image/*" multiple>
+                    <small>Erscheinen oben in der Mitte im Goldrahmen.</small>
+                </div>
+                <div class="field">
+                    <label for="dark">Untere Zone abdunkeln</label>
+                    <input type="range" id="dark" min="0" max="100" value="60">
+                    <small>Höher, wenn unten schon Schrift im Bild ist oder die Headline unruhig wirkt.</small>
+                </div>
+                <div class="actions">
+                    <button type="button" class="btn btn-primary" id="dlPng">PNG herunterladen</button>
+                    <button type="button" class="btn" id="dlJpg">JPG (unter 2 MB)</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <img id="logo" src="images/web/logo-mark.webp" alt="" hidden>
+
+    <script type="module">
+        const W = 1280, H = 720, M = 22;
+        const C = { ground: '#120e09', ink: '#f1e4c6', gold: '#d6a441', shadow: '#0b0608', rost: '#9a4426', edge: '#7d5a2c' };
+        const out = document.getElementById('out'), ctx = out.getContext('2d');
+        const mini = document.getElementById('mini').getContext('2d');
+        const $ = (id) => document.getElementById(id);
+        let scene = null, cards = [];
+        const logo = $('logo');
+
+        // ── Hilfen ──
+        const roman = (n) => {
+            const t = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+            let r = ''; for (const [v, s] of t) while (n >= v) { r += s; n -= v; } return r;
+        };
+        const rng = (seed) => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+        const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+        const loadImg = (file) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+        const spaced = (c, text, x, y, gap) => { for (const ch of text) { c.fillText(ch, x, y); x += c.measureText(ch).width + gap; } return x; };
+        const spacedWidth = (c, text, gap) => [...text].reduce((w, ch) => w + c.measureText(ch).width + gap, 0) - gap;
+
+        // ── Pergament (einmal erzeugen, immer gleich) ──
+        const parchment = (() => {
+            const p = document.createElement('canvas'); p.width = W; p.height = H; const c = p.getContext('2d');
+            const r = rng(7);
+            c.fillStyle = '#cdaa6e'; c.fillRect(0, 0, W, H);
+            for (let i = 0; i < 70; i++) {
+                const x = r() * W, y = r() * H, rad = 40 + r() * 160, dark = r() < 0.55;
+                const g = c.createRadialGradient(x, y, 0, x, y, rad);
+                g.addColorStop(0, dark ? 'rgba(120,82,38,0.16)' : 'rgba(236,208,150,0.18)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+                c.fillStyle = g; c.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+            }
+            const d = c.getImageData(0, 0, W, H), a = d.data;
+            for (let i = 0; i < a.length; i += 4) { const n = (r() - 0.5) * 26; a[i] += n; a[i + 1] += n; a[i + 2] += n; }
+            c.putImageData(d, 0, 0);
+            const burn = (x0, y0, x1, y1) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, 'rgba(70,44,18,0.75)'); g.addColorStop(1, 'rgba(70,44,18,0)'); c.fillStyle = g; c.fillRect(0, 0, W, H); };
+            burn(0, 0, 36, 0); burn(W, 0, W - 36, 0); burn(0, 0, 0, 36); burn(0, H, 0, H - 36);
+            return p;
+        })();
+
+        // ── Zeichnen ──
+        function draw() {
+            const highlight = document.querySelector('input[name=variant]:checked').value === 'highlight';
+            ctx.clearRect(0, 0, W, H);
+
+            // Rahmen
+            if (highlight) { ctx.fillStyle = C.ground; ctx.fillRect(0, 0, W, H); }
+            else { ctx.drawImage(parchment, 0, 0); }
+
+            // Bühne
+            const sx = M, sy = M, sw = W - 2 * M, sh = H - 2 * M;
+            ctx.save(); rr(ctx, sx, sy, sw, sh, 14); ctx.clip();
+            ctx.fillStyle = '#1c1610'; ctx.fillRect(sx, sy, sw, sh);
+            if (scene) {
+                const s = Math.max(sw / scene.width, sh / scene.height), w = scene.width * s, h = scene.height * s;
+                ctx.drawImage(scene, sx + (sw - w) / 2, sy + (sh - h) / 2, w, h);
+            } else {
+                const g = ctx.createRadialGradient(W / 2, H * 0.4, 0, W / 2, H * 0.4, 420);
+                g.addColorStop(0, 'rgba(240,195,90,0.45)'); g.addColorStop(1, 'rgba(240,195,90,0)');
+                ctx.fillStyle = g; ctx.fillRect(sx, sy, sw, sh);
+                ctx.fillStyle = 'rgba(241,228,198,0.55)'; ctx.font = 'italic 500 30px "Cormorant Garamond", Georgia, serif'; ctx.textAlign = 'center';
+                ctx.fillText('Lade oben rechts eine Szene hoch', W / 2, H * 0.36); ctx.textAlign = 'left';
+            }
+            // untere Zone abdunkeln
+            const k = +$('dark').value / 100;
+            if (k > 0) {
+                const start = sy + sh * (0.82 - 0.3 * k), full = sy + sh * (0.9 - 0.2 * k);
+                const g = ctx.createLinearGradient(0, start, 0, full);
+                g.addColorStop(0, 'rgba(18,14,9,0)'); g.addColorStop(1, `rgba(18,14,9,${0.75 + 0.25 * k})`);
+                ctx.fillStyle = g; ctx.fillRect(sx, start, sw, sy + sh - start);
+            }
+            // Karten oben mittig
+            if (cards.length) {
+                const cw = 118, ch = Math.round(cw * 12 / 7), gap = 16, total = cards.length * cw + (cards.length - 1) * gap;
+                let x = (W - total) / 2; const y = sy + 18;
+                for (const card of cards) {
+                    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+                    rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
+                    ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
+                    const s = Math.max((cw - 10) / card.width, (ch - 10) / card.height);
+                    ctx.drawImage(card, x + 5 + ((cw - 10) - card.width * s) / 2, y + 5 + ((ch - 10) - card.height * s) / 2, card.width * s, card.height * s);
+                    ctx.restore();
+                    rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.stroke();
+                    x += cw + gap;
+                }
+            }
+            ctx.restore();
+            // innere Kante
+            rr(ctx, sx, sy, sw, sh, 14); ctx.strokeStyle = highlight ? C.gold : C.edge; ctx.lineWidth = 2; ctx.stroke();
+
+            // Headline
+            const l1 = $('l1').value.trim().toUpperCase(), l2 = $('l2').value.trim().toUpperCase();
+            const fit = (text, max, size) => { do { ctx.font = `900 ${size}px Cinzel`; size -= 2; } while (size > 24 && ctx.measureText(text).width > max); return ctx.font; };
+            const line = (text, font, y, color) => {
+                if (!text) return;
+                ctx.font = font; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.lineJoin = 'round';
+                ctx.save(); ctx.shadowColor = C.shadow; ctx.shadowBlur = 30; ctx.fillStyle = C.shadow; ctx.fillText(text, W / 2, y); ctx.restore();
+                ctx.lineWidth = 16; ctx.strokeStyle = C.shadow; ctx.strokeText(text, W / 2, y + 5);
+                ctx.lineWidth = 14; ctx.strokeText(text, W / 2, y);
+                ctx.fillStyle = color; ctx.fillText(text, W / 2, y);
+                ctx.textAlign = 'left';
+            };
+            const f2 = fit(l2, W - 160, 104); ctx.font = f2; const h2 = ctx.measureText(l2 || 'M').actualBoundingBoxAscent;
+            const y2 = H - M - 48;
+            const f1 = fit(l1, W - 160, 64); ctx.font = f1;
+            const y1 = y2 - h2 - 22;
+            line(l1, f1, y1, C.ink);
+            line(l2, f2, y2, $('color2').value === 'gold' ? C.gold : C.ink);
+
+            // Siegel
+            const ep = parseInt($('ep').value, 10);
+            const sealText = highlight ? 'AUSSCHNITT' : 'SAND DER ZEIT' + (ep > 0 ? ' · ' + roman(ep) : '');
+            ctx.font = '600 17px Cinzel';
+            const s = 56, px = M + 20, py = M + 18, gap = 3.3;
+            const tw = spacedWidth(ctx, sealText, gap);
+            ctx.save(); rr(ctx, px - 4, py - 4, s + 30 + tw, s + 8, (s + 8) / 2);
+            ctx.fillStyle = highlight ? C.rost : 'rgba(18,14,9,0.8)'; ctx.fill(); ctx.restore();
+            if (logo.complete && logo.naturalWidth) {
+                ctx.save(); ctx.beginPath(); ctx.arc(px + s / 2, py + s / 2, s / 2, 0, Math.PI * 2); ctx.clip();
+                ctx.drawImage(logo, px, py, s, s); ctx.restore();
+            }
+            ctx.beginPath(); ctx.arc(px + s / 2, py + s / 2, s / 2 - 1, 0, Math.PI * 2); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.stroke();
+            ctx.fillStyle = highlight ? C.ink : C.gold; ctx.textBaseline = 'middle';
+            spaced(ctx, sealText, px + s + 14, py + s / 2 + 1, gap);
+            ctx.textBaseline = 'alphabetic';
+
+            // Mini-Vorschau
+            mini.clearRect(0, 0, 246, 138); mini.drawImage(out, 0, 0, 246, 138);
+        }
+
+        // ── Eingaben ──
+        $('scene').addEventListener('change', async (e) => { if (e.target.files[0]) { scene = await loadImg(e.target.files[0]); draw(); } });
+        $('cards').addEventListener('change', async (e) => { cards = await Promise.all([...e.target.files].slice(0, 3).map(loadImg)); draw(); });
+        ['l1', 'l2', 'ep', 'dark', 'color2'].forEach((id) => $(id).addEventListener('input', draw));
+        document.querySelectorAll('input[name=variant]').forEach((r) => r.addEventListener('change', draw));
+
+        const fileName = (ext) => {
+            const base = ($('l2').value || $('l1').value || 'thumbnail').toLowerCase().normalize('NFKD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+            return `sdz-${base || 'thumbnail'}.${ext}`;
+        };
+        const download = (type, ext, q) => out.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileName(ext); a.click(); }, type, q);
+        $('dlPng').addEventListener('click', () => download('image/png', 'png'));
+        $('dlJpg').addEventListener('click', () => download('image/jpeg', 'jpg', 0.9));
+
+        // Schriften laden, dann zeichnen
+        (async () => {
+            await Promise.all([document.fonts.load('900 80px Cinzel'), document.fonts.load('600 17px Cinzel'), document.fonts.load('italic 500 30px "Cormorant Garamond"')]);
+            if (!logo.complete) await new Promise((r) => logo.addEventListener('load', r, { once: true }));
+            draw();
+        })();
+    </script>
+</body>
+</html>

@@ -43,6 +43,7 @@ export default defineConfig({
         imprint: resolve(__dirname, 'imprint.html'),
         agb: resolve(__dirname, 'agb.html'),
         datenschutz: resolve(__dirname, 'datenschutz.html'),
+        thumbnail: resolve(__dirname, 'thumbnail.html'),
       },
     },
   },
