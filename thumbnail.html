@@ -49,7 +49,7 @@
                 <canvas id="out" width="1280" height="720" aria-label="Vorschau des Thumbnails"></canvas>
                 <div class="tool__mini">
                     <canvas id="mini" width="246" height="138" aria-hidden="true"></canvas>
-                    <p>Karten und Text kannst du in der großen Vorschau mit der Maus verschieben. Links siehst du, wie groß das Thumbnail auf dem Handy ist.</p>
+                    <p>Karten, Text und Pfeile kannst du in der großen Vorschau mit der Maus verschieben. Links siehst du, wie groß das Thumbnail auf dem Handy ist.</p>
                 </div>
             </div>
 
@@ -98,6 +98,18 @@
                     <button type="button" class="btn btn-sm" id="cardsReset" style="align-self:flex-start; margin-top:6px">Karten und Text zurücksetzen</button>
                 </div>
                 <div class="field">
+                    <label>Pfeile</label>
+                    <button type="button" class="btn btn-sm" id="arrowAdd" style="align-self:flex-start">Pfeil hinzufügen</button>
+                    <small id="arrowInfo">Noch kein Pfeil.</small>
+                    <label for="arot" style="margin-top:8px">Drehung</label>
+                    <input type="range" id="arot" min="0" max="359" value="20">
+                    <label for="asize">Pfeilgröße</label>
+                    <input type="range" id="asize" min="40" max="250" value="100">
+                    <label for="acolor">Pfeilfarbe</label>
+                    <select id="acolor"><option value="gold">Gold</option><option value="ink">Sand</option><option value="rost">Rost</option></select>
+                    <button type="button" class="btn btn-sm" id="arrowDel" style="align-self:flex-start; margin-top:6px">Pfeil löschen</button>
+                </div>
+                <div class="field">
                     <label for="dark">Untere Zone abdunkeln</label>
                     <input type="range" id="dark" min="0" max="100" value="60">
                     <small>Höher, wenn unten schon Schrift im Bild ist oder die Headline unruhig wirkt.</small>
@@ -120,6 +132,7 @@
         const $ = (id) => document.getElementById(id);
         let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null, guides = { v: false, h: false };
         const SNAP = 12;
+        let arrows = [], sel = -1, exporting = false;
         const logo = $('logo');
 
         // ── Hilfen ──
@@ -153,6 +166,28 @@
         };
         const parchment = makeFrame('#cdaa6e', 'rgba(120,82,38,0.16)', 'rgba(236,208,150,0.18)', 'rgba(70,44,18,0.75)');
         const rostFrame = makeFrame('#9a4426', 'rgba(60,18,8,0.24)', 'rgba(200,118,76,0.16)', 'rgba(36,12,5,0.8)');
+
+        // ── Pfeile ──
+        const arrowGeom = () => {
+            const sx = -100, sy = 45, cx = -30, cy = -15, ex = 40, ey = 0;
+            const ang = Math.atan2(ey - cy, ex - cx), dx = Math.cos(ang), dy = Math.sin(ang);
+            const shaft = new Path2D(); shaft.moveTo(sx, sy); shaft.quadraticCurveTo(cx, cy, ex - dx * 6, ey - dy * 6);
+            const head = new Path2D(); head.moveTo(ex + dx * 62, ey + dy * 62); head.lineTo(ex - dy * 40, ey + dx * 40); head.lineTo(ex + dy * 40, ey - dx * 40); head.closePath();
+            return { shaft, head };
+        };
+        const arrowColor = (a) => a.color === 'ink' ? C.ink : a.color === 'rost' ? C.rost : C.gold;
+        const withArrow = (a, fn) => { ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(a.rot * Math.PI / 180); ctx.scale(a.scale, a.scale); fn(); ctx.restore(); };
+        const drawArrow = (a) => withArrow(a, () => {
+            const { shaft, head } = arrowGeom(), col = arrowColor(a);
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.shadowColor = C.shadow; ctx.shadowBlur = 24;
+            ctx.strokeStyle = C.shadow; ctx.lineWidth = 36; ctx.stroke(shaft); ctx.lineWidth = 14; ctx.stroke(head); ctx.fillStyle = C.shadow; ctx.fill(head);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = col; ctx.lineWidth = 22; ctx.stroke(shaft); ctx.fillStyle = col; ctx.fill(head);
+        });
+        const outlineArrow = (a) => withArrow(a, () => { ctx.setLineDash([8, 6]); ctx.strokeStyle = C.ink; ctx.lineWidth = 2 / a.scale; ctx.strokeRect(-115, -62, 230, 124); });
+        const arrowLocal = (a, p) => { const dx = p.x - a.x, dy = p.y - a.y, r = -a.rot * Math.PI / 180; return { x: (dx * Math.cos(r) - dy * Math.sin(r)) / a.scale, y: (dx * Math.sin(r) + dy * Math.cos(r)) / a.scale }; };
+        const hitArrow = (p) => { for (let i = arrows.length - 1; i >= 0; i--) { const l = arrowLocal(arrows[i], p); if (Math.abs(l.x) <= 115 && Math.abs(l.y) <= 62) return i; } return -1; };
 
         // ── Zeichnen ──
         function draw() {
@@ -232,6 +267,9 @@
                 if (drag && drag.type === 'text') { ctx.save(); ctx.setLineDash([8, 6]); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.strokeRect(textBox.x, textBox.y, textBox.w, textBox.h); ctx.restore(); }
             }
 
+            // Pfeile
+            arrows.forEach(drawArrow);
+
             // Siegel
             const ep = parseInt($('ep').value, 10);
             const sealText = (highlight ? 'HIGHLIGHT' : 'SAND DER ZEIT') + (ep > 0 ? ' · ' + roman(ep) : '');
@@ -251,6 +289,9 @@
 
             // Mini-Vorschau
             mini.clearRect(0, 0, 246, 138); mini.drawImage(out, 0, 0, 246, 138);
+
+            // Auswahl (nur in der Vorschau)
+            if (!exporting && arrows[sel]) outlineArrow(arrows[sel]);
 
             // Ausrichtungslinien beim Ziehen
             if (drag && (guides.v || guides.h)) {
@@ -280,10 +321,11 @@
         const inText = (p) => !!textBox && p.x >= textBox.x && p.x <= textBox.x + textBox.w && p.y >= textBox.y && p.y <= textBox.y + textBox.h;
         const hit = (p) => { for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i]; if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) return i; } return -1; };
         out.addEventListener('pointerdown', (e) => {
-            const p = toCanvas(e), i = hit(p);
-            if (i >= 0) { const c = cards.splice(i, 1)[0]; cards.push(c); drag = { type: 'card', c, dx: p.x - c.x, dy: p.y - c.y }; }
+            const p = toCanvas(e), ai = hitArrow(p), i = hit(p);
+            if (ai >= 0) { const a = arrows.splice(ai, 1)[0]; arrows.push(a); sel = arrows.length - 1; syncArrowUI(); drag = { type: 'arrow', a, dx: p.x - a.x, dy: p.y - a.y }; }
+            else if (i >= 0) { const c = cards.splice(i, 1)[0]; cards.push(c); drag = { type: 'card', c, dx: p.x - c.x, dy: p.y - c.y }; }
             else if (inText(p)) { drag = { type: 'text', dx: p.x - textOff.x, dy: p.y - textOff.y }; }
-            else return;
+            else { if (sel >= 0) { sel = -1; syncArrowUI(); draw(); } return; }
             out.setPointerCapture(e.pointerId); out.style.cursor = 'grabbing'; e.preventDefault(); draw();
         });
         out.addEventListener('pointermove', (e) => {
@@ -294,24 +336,43 @@
                 guides.h = false;
                 if (textBox) { const cy = textBox.y + textBox.h / 2 + (ny - textOff.y); guides.h = Math.abs(cy - H / 2) < SNAP; if (guides.h) ny += Math.round(H / 2 - cy); }
                 textOff.x = nx; textOff.y = ny; draw();
+            } else if (drag && drag.type === 'arrow') {
+                const a = drag.a; let nx = Math.round(p.x - drag.dx), ny = Math.round(p.y - drag.dy);
+                guides.v = Math.abs(nx - W / 2) < SNAP; if (guides.v) nx = W / 2;
+                guides.h = Math.abs(ny - H / 2) < SNAP; if (guides.h) ny = H / 2;
+                a.x = nx; a.y = ny; draw();
             } else if (drag) {
                 const c = drag.c; let nx = Math.round(p.x - drag.dx), ny = Math.round(p.y - drag.dy);
                 guides.v = Math.abs(nx + c.w / 2 - W / 2) < SNAP; if (guides.v) nx = Math.round(W / 2 - c.w / 2);
                 guides.h = Math.abs(ny + c.h / 2 - H / 2) < SNAP; if (guides.h) ny = Math.round(H / 2 - c.h / 2);
                 c.x = nx; c.y = ny; draw();
             }
-            else out.style.cursor = (hit(p) >= 0 || inText(p)) ? 'grab' : 'default';
+            else out.style.cursor = (hitArrow(p) >= 0 || hit(p) >= 0 || inText(p)) ? 'grab' : 'default';
         });
         const endDrag = () => { if (drag) { drag = null; guides = { v: false, h: false }; out.style.cursor = 'default'; draw(); } };
         out.addEventListener('pointerup', endDrag); out.addEventListener('pointercancel', endDrag);
         ['l1', 'l2', 'ep', 'dark', 'color2', 'tsize'].forEach((id) => $(id).addEventListener('input', draw));
         document.querySelectorAll('input[name=variant]').forEach((r) => r.addEventListener('change', draw));
 
+        const syncArrowUI = () => {
+            const a = arrows[sel], on = !!a;
+            ['arot', 'asize', 'acolor', 'arrowDel'].forEach((id) => { $(id).disabled = !on; });
+            if (a) { $('arot').value = a.rot; $('asize').value = Math.round(a.scale * 100); $('acolor').value = a.color; }
+            $('arrowInfo').textContent = on ? `Pfeil ${sel + 1} von ${arrows.length} ausgewählt. In der Vorschau verschieben, hier drehen und skalieren.`
+                : arrows.length ? 'Klick auf einen Pfeil in der Vorschau, um ihn auszuwählen.' : 'Noch kein Pfeil.';
+        };
+        $('arrowAdd').addEventListener('click', () => { arrows.push({ x: W / 2, y: H / 2, rot: 20, scale: 1, color: 'gold' }); sel = arrows.length - 1; syncArrowUI(); draw(); });
+        $('arrowDel').addEventListener('click', () => { if (sel >= 0) { arrows.splice(sel, 1); sel = -1; syncArrowUI(); draw(); } });
+        $('arot').addEventListener('input', () => { if (arrows[sel]) { arrows[sel].rot = +$('arot').value; draw(); } });
+        $('asize').addEventListener('input', () => { if (arrows[sel]) { arrows[sel].scale = +$('asize').value / 100; draw(); } });
+        $('acolor').addEventListener('change', () => { if (arrows[sel]) { arrows[sel].color = $('acolor').value; draw(); } });
+        syncArrowUI();
+
         const fileName = (ext) => {
             const base = ($('l2').value || $('l1').value || 'thumbnail').toLowerCase().normalize('NFKD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
             return `sdz-${base || 'thumbnail'}.${ext}`;
         };
-        const download = (type, ext, q) => out.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileName(ext); a.click(); }, type, q);
+        const download = (type, ext, q) => { exporting = true; draw(); out.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileName(ext); a.click(); }, type, q); exporting = false; draw(); };
         $('dlPng').addEventListener('click', () => download('image/png', 'png'));
         $('dlJpg').addEventListener('click', () => download('image/jpeg', 'jpg', 0.9));
 
