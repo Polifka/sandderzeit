@@ -105,3 +105,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+/* ─── Newsletter (eigenes Formular, Anmeldung läuft über /newsletter.php zu Mailjet) ─── */
+const nlForm = document.querySelector('.nl-form')
+if (nlForm) {
+  const msg = nlForm.querySelector('.nl-form__msg')
+  const btn = nlForm.querySelector('button[type="submit"]')
+  const say = (text, kind) => { msg.textContent = text; msg.className = 'nl-form__msg' + (kind ? ' is-' + kind : '') }
+  nlForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const email = nlForm.email.value.trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return say('Bitte gib eine gültige E-Mail-Adresse ein.', 'error')
+    if (!nlForm.consent.checked) return say('Bitte bestätige noch das Häkchen.', 'error')
+    btn.disabled = true
+    say('Einen Moment …')
+    try {
+      const res = await fetch('/newsletter.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, consent: true, website: nlForm.website.value }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) throw new Error(data.error || 'fail')
+      nlForm.classList.add('is-done')
+      say('Fast geschafft. Schau in dein Postfach und bestätige deine Anmeldung.', 'ok')
+    } catch (err) {
+      say('Das hat leider nicht geklappt. Versuch es bitte gleich noch einmal oder schreib uns an info@sandderzeit.de.', 'error')
+    } finally {
+      btn.disabled = false
+    }
+  })
+}
