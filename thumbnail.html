@@ -13,6 +13,7 @@
         .tool .lead { margin-top: 8px; font-style: italic; color: var(--ink-muted); }
         .tool__grid { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 32px; align-items: flex-start; }
         .tool__preview { flex: 999 1 640px; min-width: 0; }
+        .tool__preview canvas.has-cards { touch-action: none; }
         .tool__preview canvas { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: var(--card-lift); background: var(--surface); }
         .tool__mini { margin-top: 20px; display: flex; gap: 16px; align-items: center; }
         .tool__mini canvas { width: 246px; height: 138px; border-radius: 4px; }
@@ -36,7 +37,7 @@
 <body>
     <header id="main-header" class="scrolled">
         <a href="index.html" class="brand"><img src="images/web/logo-nav.webp" alt="" width="26" height="44"><span>Sand der Zeit</span></a>
-        <nav aria-label="Werkzeuge"><ul><li><a href="design-system.html">Designsystem</a></li><li><a href="index.html">Website</a></li></ul></nav>
+        <nav aria-label="Werkzeuge"><ul><li><a href="intern/">Intern</a></li><li><a href="design-system.html">Designsystem</a></li><li><a href="index.html">Website</a></li></ul></nav>
     </header>
 
     <main class="tool">
@@ -85,7 +86,12 @@
                 <div class="field">
                     <label for="cards">Tarotkarten (optional, bis zu 3)</label>
                     <input type="file" id="cards" accept="image/*" multiple>
-                    <small>Erscheinen oben in der Mitte im Goldrahmen.</small>
+                    <small>Erscheinen im Goldrahmen und lassen sich in der Vorschau mit der Maus verschieben.</small>
+                </div>
+                <div class="field">
+                    <label for="csize">Kartengröße</label>
+                    <input type="range" id="csize" min="70" max="240" value="118">
+                    <button type="button" class="btn btn-sm" id="cardsReset" style="align-self:flex-start; margin-top:6px">Karten neu anordnen</button>
                 </div>
                 <div class="field">
                     <label for="dark">Untere Zone abdunkeln</label>
@@ -108,7 +114,7 @@
         const out = document.getElementById('out'), ctx = out.getContext('2d');
         const mini = document.getElementById('mini').getContext('2d');
         const $ = (id) => document.getElementById(id);
-        let scene = null, cards = [];
+        let scene = null, cards = [], drag = null;
         const logo = $('logo');
 
         // ── Hilfen ──
@@ -172,20 +178,17 @@
                 g.addColorStop(0, 'rgba(18,14,9,0)'); g.addColorStop(1, `rgba(18,14,9,${0.75 + 0.25 * k})`);
                 ctx.fillStyle = g; ctx.fillRect(sx, start, sw, sy + sh - start);
             }
-            // Karten oben mittig
-            if (cards.length) {
-                const cw = 118, ch = Math.round(cw * 12 / 7), gap = 16, total = cards.length * cw + (cards.length - 1) * gap;
-                let x = (W - total) / 2; const y = sy + 18;
-                for (const card of cards) {
-                    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
-                    rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
-                    ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
-                    const s = Math.max((cw - 10) / card.width, (ch - 10) / card.height);
-                    ctx.drawImage(card, x + 5 + ((cw - 10) - card.width * s) / 2, y + 5 + ((ch - 10) - card.height * s) / 2, card.width * s, card.height * s);
-                    ctx.restore();
-                    rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.stroke();
-                    x += cw + gap;
-                }
+            // Karten (frei verschiebbar)
+            const cw = +$('csize').value, ch = Math.round(cw * 12 / 7);
+            for (const card of cards) {
+                const { img, x, y } = card; card.w = cw; card.h = ch;
+                ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+                rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
+                ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
+                const k2 = Math.max((cw - 10) / img.width, (ch - 10) / img.height);
+                ctx.drawImage(img, x + 5 + ((cw - 10) - img.width * k2) / 2, y + 5 + ((ch - 10) - img.height * k2) / 2, img.width * k2, img.height * k2);
+                ctx.restore();
+                rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = (drag && drag.c === card) ? C.ink : C.gold; ctx.lineWidth = 2; ctx.stroke();
             }
             ctx.restore();
             // innere Kante
@@ -233,7 +236,34 @@
 
         // ── Eingaben ──
         $('scene').addEventListener('change', async (e) => { if (e.target.files[0]) { scene = await loadImg(e.target.files[0]); draw(); } });
-        $('cards').addEventListener('change', async (e) => { cards = await Promise.all([...e.target.files].slice(0, 3).map(loadImg)); draw(); });
+        const layoutCards = () => {
+            const cw = +$('csize').value, gap = 16, total = cards.length * cw + (cards.length - 1) * gap;
+            cards.forEach((c, i) => { c.x = (W - total) / 2 + i * (cw + gap); c.y = M + 18; });
+            out.classList.toggle('has-cards', cards.length > 0);
+        };
+        $('cards').addEventListener('change', async (e) => {
+            const imgs = await Promise.all([...e.target.files].slice(0, 3).map(loadImg));
+            cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
+        });
+        $('csize').addEventListener('input', draw);
+        $('cardsReset').addEventListener('click', () => { layoutCards(); draw(); });
+
+        // Drag and Drop in der Vorschau
+        const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+        const hit = (p) => { for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i]; if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) return i; } return -1; };
+        out.addEventListener('pointerdown', (e) => {
+            const p = toCanvas(e), i = hit(p); if (i < 0) return;
+            const c = cards.splice(i, 1)[0]; cards.push(c);
+            drag = { c, dx: p.x - c.x, dy: p.y - c.y };
+            out.setPointerCapture(e.pointerId); out.style.cursor = 'grabbing'; e.preventDefault(); draw();
+        });
+        out.addEventListener('pointermove', (e) => {
+            const p = toCanvas(e);
+            if (drag) { drag.c.x = Math.round(p.x - drag.dx); drag.c.y = Math.round(p.y - drag.dy); draw(); }
+            else out.style.cursor = hit(p) >= 0 ? 'grab' : 'default';
+        });
+        const endDrag = () => { if (drag) { drag = null; out.style.cursor = 'default'; draw(); } };
+        out.addEventListener('pointerup', endDrag); out.addEventListener('pointercancel', endDrag);
         ['l1', 'l2', 'ep', 'dark', 'color2'].forEach((id) => $(id).addEventListener('input', draw));
         document.querySelectorAll('input[name=variant]').forEach((r) => r.addEventListener('change', draw));
 
