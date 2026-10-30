@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main  # Triggert bei jedem Push auf den main Branch
+  schedule:
+    - cron: '17 4 * * *'  # Täglich um 04:17 UTC neu bauen, damit neue Podcastfolgen erscheinen
+  workflow_dispatch:      # Manuell starten über GitHub › Actions
 
 jobs:
   build-and-deploy:
