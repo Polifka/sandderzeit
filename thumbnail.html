@@ -59,6 +59,12 @@
         .check { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; line-height: 1.4; color: var(--ink); cursor: pointer; }
         .check input { margin-top: 4px; accent-color: var(--gold); width: 18px; height: 18px; flex: none; }
         #gmOut { min-height: 160px; font-size: 16px; color: var(--ink-muted); }
+        .vorlagen { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .vorlage { display: flex; flex-direction: column; gap: 6px; }
+        .vorlage img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--line-strong); border-radius: 4px; background: #000; }
+        .vorlage button { padding: 6px 8px; background: var(--ground); border: 1px solid var(--line-strong); border-radius: 3px; font-family: var(--font-display); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); cursor: pointer; }
+        .vorlage button:hover { border-color: var(--gold); color: var(--gold); }
+        .vorlage button.ok { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
     </style>
 </head>
 <body>
@@ -88,10 +94,15 @@
                 <details class="step" id="stepGm">
                     <summary><span>I</span>Prompt für Gemini</summary>
                     <div class="step__body">
-                        <span class="hint">Beschreib die Szene, kopier den fertigen Prompt in deinen Gemini Chat, häng dort deine Fotos an und lade das Ergebnis unten bei Szene hoch.</span>
+                        <span class="hint">So geht's: Stilvorlagen kopieren und in deinen Gemini Chat einfügen, deine eigenen Fotos dazu, dann den Prompt kopieren und einfügen. Das Ergebnis lädst du unten bei Szene hoch.</span>
+                        <div class="field">
+                            <span class="lbl">Stilvorlagen</span>
+                            <div class="vorlagen" id="vorlagen"></div>
+                            <span class="hint">Einzeln kopieren und in Gemini mit Cmd+V einfügen.</span>
+                        </div>
                         <div class="field">
                             <label for="gmIdea">Was soll zu sehen sein?</label>
-                            <textarea id="gmIdea" placeholder="z. B. Die Frau aus meinem Foto in die Mitte, links im Hintergrund eine Jugendliche mit Tattoos, Pottschnitt und Kopfhörern, rechts ein Geschäftsmann im Anzug mit Kopfhörern"></textarea>
+                            <textarea id="gmIdea" placeholder="Wer oder was ist zu sehen, wo im Bild, welche Stimmung?"></textarea>
                         </div>
                         <div class="chips" aria-label="Vorlagen">
                             <button type="button" class="chip" data-preset="drei">Drei Personen</button>
@@ -99,6 +110,7 @@
                             <button type="button" class="chip" data-preset="engel">Engel und Teufel</button>
                             <button type="button" class="chip" data-preset="aendern">Bild ändern</button>
                         </div>
+                        <label class="check"><input type="checkbox" id="gmRefs" checked><span>Auf die Stilvorlagen verweisen<br><small class="hint">Gemini übernimmt Look und Licht, aber nicht deren Personen.</small></span></label>
                         <label class="check"><input type="checkbox" id="gmStyle"><span>Hausstil Kupferstich anhängen</span></label>
                         <label class="check"><input type="checkbox" id="gmRules" checked><span>Thumbnail-Regeln anhängen<br><small class="hint">16:9, kein Text, unteres Drittel ruhig und dunkel für die Headline.</small></span></label>
                         <div class="field">
@@ -440,21 +452,23 @@
 
         // ── Prompt für Gemini (kopieren, im eigenen Gemini Chat einfügen) ──
         const GM_RULES = 'Format 16:9 Querformat für ein YouTube-Thumbnail. Absolut kein Text, keine Schrift, keine Buchstaben, kein Logo, kein Wasserzeichen. Hauptmotiv in der oberen Bildhälfte, das untere Drittel ruhig, dunkel und frei, dort kommt später die Headline hin. Dunkle Grundstimmung, warmes goldenes Licht, goldener Rauch und Funken, hoher Kontrast, gut lesbar auch in klein.';
+        const GM_REFS = 'Die angehängten Beispielbilder sind Stilvorlagen: Orientiere dich an ihrem Look, Licht, Farben, Kontrast und Bildaufbau. Übernimm aber nicht ihre Personen oder Motive, außer ich sage es ausdrücklich.';
         const GM_STYLE = 'Stil: Kupferstich, Gravur, feine Schraffur, Goldtinte auf schwarzem Grund, warmer goldener Lichtschein hinter den Figuren.';
         const GM_PRESETS = {
             drei: 'Die Person aus meinem Foto groß in der Mitte als Schwarzweiß-Porträt. Links im Hintergrund eine weitere Person, rechts im Hintergrund eine weitere Person, beide etwas kleiner und leicht unscharf. Dazwischen goldener Rauch und Funken.',
             symbol: 'Links ein großes goldenes, mystisches Symbol als Relief mit warmem Glühen. Rechts die Person aus meinem Foto als Schwarzweiß-Porträt vor dunklem Rauch. Goldene Funken verbinden beide Seiten.',
             engel: 'Die Person aus meinem Foto mittig, links ein weißer Engelsflügel mit Heiligenschein, rechts ein roter Teufelsflügel mit Horn. Zwei Tarotkarten schweben über dem Kopf. Gezeichneter Stil mit Schraffur, warmes Gegenlicht.',
-            aendern: 'Nimm das angehängte Bild als Vorlage. Behalte Personen, Licht und Stil exakt bei und ändere nur Folgendes:',
+            aendern: 'Nimm mein eigenes angehängtes Bild als Vorlage. Behalte Personen, Licht und Stil exakt bei und ändere nur Folgendes:',
         };
         const gmBuild = () => {
             const idea = $('gmIdea').value.trim();
             const parts = ['Erstelle ein Bild.', idea || '[Hier beschreiben, was zu sehen sein soll]'];
+            if ($('gmRefs').checked) parts.push(GM_REFS);
             if ($('gmStyle').checked) parts.push(GM_STYLE);
             if ($('gmRules').checked) parts.push(GM_RULES);
             $('gmOut').value = parts.join('\n\n');
         };
-        ['gmIdea', 'gmStyle', 'gmRules'].forEach((id) => $(id).addEventListener('input', gmBuild));
+        ['gmIdea', 'gmRefs', 'gmStyle', 'gmRules'].forEach((id) => $(id).addEventListener('input', gmBuild));
         document.querySelectorAll('.chip[data-preset]').forEach((b) => b.addEventListener('click', () => {
             const t = $('gmIdea'), add = GM_PRESETS[b.dataset.preset];
             t.value = t.value.trim() ? add + ' ' + t.value.trim() : add + ' ';
@@ -467,6 +481,30 @@
             const b = $('gmCopy'); b.textContent = 'Kopiert'; setTimeout(() => { b.textContent = 'Prompt kopieren'; }, 1600);
         });
         gmBuild();
+
+        // Stilvorlagen zum Kopieren (Zwischenablage braucht PNG)
+        const VORLAGEN = [1, 2, 3, 4, 5].map((n) => `/thumb-vorlagen/vorlage-${n}.jpg`);
+        const asPng = (src) => new Promise((res, rej) => {
+            const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = rej; i.src = src;
+        });
+        VORLAGEN.forEach((src, k) => {
+            const d = document.createElement('div'); d.className = 'vorlage';
+            d.innerHTML = `<img src="${src}" alt="Stilvorlage ${k + 1}" loading="lazy"><button type="button">Kopieren</button>`;
+            const b = d.querySelector('button');
+            b.addEventListener('click', async () => {
+                b.textContent = 'Kopiere …';
+                try {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': asPng(src) })]);
+                    b.textContent = 'Kopiert'; b.classList.add('ok');
+                } catch {
+                    // Fallback: herunterladen und in Gemini hochladen
+                    const a = document.createElement('a'); a.href = src; a.download = `sdz-stilvorlage-${k + 1}.jpg`; a.click();
+                    b.textContent = 'Geladen';
+                }
+                setTimeout(() => { b.textContent = 'Kopieren'; b.classList.remove('ok'); }, 1800);
+            });
+            $('vorlagen').appendChild(d);
+        });
 
         const fileName = (ext) => {
             const base = ($('l2').value || $('l1').value || 'thumbnail').toLowerCase().normalize('NFKD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
