@@ -143,7 +143,7 @@
                         <div class="field"><label for="l2">Zeile 2 · groß</label><input type="text" id="l2" value="Entschlüsselt"></div>
                         <div class="two">
                             <div class="field"><label for="color2">Farbe Zeile 2</label><select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select></div>
-                            <div class="field"><div class="row"><label for="tsize">Größe</label><output data-for="tsize"></output></div><input type="range" id="tsize" min="50" max="150" value="100" style="margin-top:14px"></div>
+                            <div class="field"><div class="row"><label for="tsize">Größe</label><output data-for="tsize"></output></div><input type="range" id="tsize" min="50" max="150" value="70" style="margin-top:14px"></div>
                         </div>
                     </div>
                 </details>
@@ -421,7 +421,7 @@
             cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
         });
         $('csize').addEventListener('input', draw);
-        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; $('tsize').value = 100; updateOutputs(); draw(); });
+        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; $('tsize').value = 70; updateOutputs(); draw(); });
 
         // Drag and Drop in der Vorschau
         const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
