@@ -230,6 +230,25 @@
         const W = 1280, H = 720, M = 22;
         const C = { ground: '#120e09', ink: '#f1e4c6', gold: '#d6a441', shadow: '#0b0608', rost: '#9a4426', edge: '#7d5a2c' };
         const out = document.getElementById('out'), ctx = out.getContext('2d');
+        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+        // Bilder in Stufen verkleinern (je höchstens halbieren). Sonst entsteht bei Rasterdrucken
+        // wie den Tarot-Scans ein Moiré- bzw. Karomuster, vor allem in Safari.
+        const scaledCache = new WeakMap();
+        function scaled(img, w, h) {
+            w = Math.max(1, Math.round(w)); h = Math.max(1, Math.round(h));
+            if (img.width <= w * 1.5) return img;
+            let m = scaledCache.get(img); if (!m) { m = new Map(); scaledCache.set(img, m); }
+            const key = w + 'x' + h; if (m.has(key)) return m.get(key);
+            let src = img, sw = img.width, sh = img.height;
+            while (sw / 2 > w) {
+                const c = document.createElement('canvas'); c.width = Math.round(sw / 2); c.height = Math.round(sh / 2);
+                const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, c.width, c.height);
+                src = c; sw = c.width; sh = c.height;
+            }
+            const c = document.createElement('canvas'); c.width = w; c.height = h;
+            const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, w, h);
+            if (m.size > 30) m.clear(); m.set(key, c); return c;
+        }
         const mini = document.getElementById('mini').getContext('2d');
         const $ = (id) => document.getElementById(id);
         let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null, guides = { v: false, h: false };
@@ -467,7 +486,7 @@
                 rr(ctx, x, y, cw, ch, 6); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
                 if (glow > 0) { ctx.save(); ctx.shadowColor = 'rgba(240,195,90,0.95)'; ctx.shadowBlur = 60 * glow; rr(ctx, x, y, cw, ch, 6); ctx.fillStyle = '#fff'; ctx.fill(); ctx.shadowBlur = 16 * glow; ctx.fill(); ctx.restore(); }
                 // Karte komplett zeigen, inklusive weißem Rand, nichts abschneiden
-                ctx.save(); rr(ctx, x, y, cw, ch, 6); ctx.clip(); ctx.drawImage(img, x, y, cw, ch); ctx.restore();
+                ctx.save(); rr(ctx, x, y, cw, ch, 6); ctx.clip(); ctx.drawImage(scaled(img, cw, ch), x, y, cw, ch); ctx.restore();
                 ctx.restore();
             }
         }
