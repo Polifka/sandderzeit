@@ -341,3 +341,44 @@ main.content-section { padding: 160px 0 var(--space-8); }
 /* ─── Footer: Kanäle ─── */
 .footer-social { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3) var(--space-6); }
 .footer-social a { font-family: var(--font-display); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+
+/* ─── Steinschleifer: einzelne Angebotskarte ─── */
+.offers.offers--single { grid-template-columns: minmax(0, 380px); justify-content: center; margin-top: var(--space-6); }
+.offers.offers--single .offer { text-align: center; }
+.offer__price-old { margin-top: var(--space-4); font-size: 17px; color: var(--ink-muted); }
+.offer__price-old s { color: var(--ink-muted); text-decoration-color: var(--gold); text-decoration-thickness: 2px; }
+.offer__price-old + .offer__price { margin-top: var(--space-1); }
+
+/* ─── Steinschleifer: Hero ─── */
+.hero__sub { margin-top: var(--space-4); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--ink); }
+.hero__points { list-style: none; margin-top: var(--space-5); }
+.hero__points li { position: relative; padding-left: 24px; margin-bottom: var(--space-2); font-size: 19px; color: var(--ink-muted); }
+.hero__points li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+.nl-form.hero__form { margin: var(--space-5) 0 0; }
+.hero__form .nl-form__consent { font-size: 14px; }
+.hero__form .nl-form__msg { text-align: left; }
+.hero__offer { margin-top: var(--space-4); font-size: 17px; color: var(--ink-muted); }
+.hero__offer strong { color: var(--gold); font-weight: 600; }
+.hero__offer .countdown b { color: var(--ink); font-weight: 600; }
+.hosts { display: flex; align-items: center; margin-top: var(--space-5); }
+.hosts img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); background: var(--surface); }
+.hosts img + img { margin-left: -12px; }
+.hosts p { margin-left: var(--space-3); font-size: 16px; line-height: 1.4; color: var(--ink-muted); }
+.hosts strong { color: var(--ink); font-weight: 600; }
+.hero__more { display: inline-block; margin-top: var(--space-5); font-family: var(--font-display); font-size: 12px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+
+/* Hero-Container auf schmalen Bildschirmen nicht breiter als der Bildschirm */
+.hero > .container { width: 100%; }
+@media (max-width: 560px) { .hero__sub { font-size: 22px; } .hero__points li { font-size: 18px; } }
+@media (max-width: 560px) { .hero__spread .card--glow .card__name { font-size: 10px; letter-spacing: .1em; } }
+
+/* ─── Steinschleifer: Leiste unter dem Hero, Countdown, Gesichter ─── */
+.pillars { background: var(--surface); border-bottom: 1px solid var(--line); padding: var(--space-6) 0; }
+.pillars__list { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); }
+.pillars__list li { position: relative; padding-left: 24px; font-size: 19px; line-height: 1.4; color: var(--ink); }
+.pillars__list li::before { content: ""; position: absolute; left: 2px; top: 10px; width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+@media (max-width: 860px) { .pillars__list { grid-template-columns: 1fr; gap: var(--space-3); } }
+.countdown-big { margin-bottom: var(--space-5); font-family: var(--font-display); font-size: 14px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); }
+.countdown-big b { display: block; margin-bottom: var(--space-2); font-family: var(--font-serif); font-weight: 500; font-size: 56px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.hosts { justify-content: center; margin-top: var(--space-6); }
+.newsletter .hosts p { margin-top: 0; text-align: left; }

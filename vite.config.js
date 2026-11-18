@@ -46,6 +46,7 @@ export default defineConfig({
         thumbnail: resolve(__dirname, 'thumbnail.html'),
         designsystem: resolve(__dirname, 'design-system.html'),
         intern: resolve(__dirname, 'intern/index.html'),
+        steinschleifer: resolve(__dirname, 'steinschleifer/index.html'),
       },
     },
   },

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Steinschleifer · Community von Sand der Zeit</title>
+    <meta name="description"
+        content="Die Steinschleifer: die Community von Sand der Zeit. Tarot, Astrologie und okkultes Wissen, angewendet im echten Leben. Mit Filip Strüven und Jan Polifka. Start zur Wintersonnenwende.">
+    <meta name="theme-color" content="#120e09">
+    <link rel="icon" href="/images/web/favicon.png" type="image/png">
+    <link rel="preload" href="/fonts/cinzel-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+    <header id="main-header">
+        <a href="/" class="brand" aria-label="Sand der Zeit, zur Startseite">
+            <img src="/images/web/logo-nav.webp" alt="" width="26" height="44">
+            <span>Sand der Zeit</span>
+        </a>
+        <nav id="nav-menu" aria-label="Hauptmenü">
+            <ul>
+                <li><a href="#inhalt">Was dich erwartet</a></li>
+                <li><a href="#wir">Über uns</a></li>
+                <li><a href="#start">Start</a></li>
+                <li><a href="#fragen">Fragen</a></li>
+            </ul>
+        </nav>
+        <div class="header-cta">
+            <a href="#warteliste" class="btn btn-primary btn-sm">Auf die Warteliste</a>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menü öffnen" aria-controls="nav-menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+
+    <main>
+        <!-- 0 · HERO -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero__text">
+                    <p class="hero__eyebrow">Die Steinschleifer · Start am 21. Dezember</p>
+                    <h1 class="hero__title">Schleif deinen <em>Stein.</em></h1>
+                    <p class="hero__sub">Du hast viel erreicht. Aber lebst du dein Leben?</p>
+                    <form class="nl-form hero__form" action="/newsletter.php" method="post" novalidate>
+                        <input type="hidden" name="list" value="steinschleifer">
+                        <div class="nl-form__row">
+                            <label class="sr-only" for="hero-email">Deine E-Mail-Adresse</label>
+                            <input class="nl-form__input" id="hero-email" type="email" name="email" placeholder="deine@email.de" autocomplete="email" required maxlength="255">
+                            <button class="btn btn-primary nl-form__btn" type="submit">Auf die Warteliste</button>
+                        </div>
+                        <input class="nl-form__hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+                        <label class="nl-form__consent">
+                            <input type="checkbox" name="consent" value="1" required>
+                            <span>Ich möchte über den Start der Steinschleifer und Neues von Sand der Zeit per Mail informiert werden und kann mich jederzeit abmelden. <a href="/datenschutz.html">Datenschutz</a></span>
+                        </label>
+                        <p class="nl-form__msg" role="status" aria-live="polite"></p>
+                    </form>
+                    <p class="hero__offer"><strong>33 € statt 55 €</strong> im Monat · nur 10 Gründungsplätze</p>
+                </div>
+                <div class="hero__spread" aria-hidden="true">
+                    <div class="card card--scan"><img src="/images/web/acht-der-muenzen.webp" alt="" width="418" height="720"></div>
+                    <div class="card card--glow">
+                        <div class="card__frame">
+                            <span class="card__numeral">0</span>
+                            <div class="card__art"><img src="/images/web/logo-card.webp" alt="" width="350" height="600"></div>
+                            <span class="card__name">Die Steinschleifer</span>
+                        </div>
+                    </div>
+                    <div class="card card--scan"><img src="/images/web/der-magier.webp" alt="" width="418" height="720"></div>
+                </div>
+            </div>
+            <svg class="hero__dunes" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true">
+                <path class="d1" d="M0 96 C 180 40, 360 40, 560 88 S 940 150, 1140 92 S 1360 40, 1440 70 L1440 180 L0 180 Z"/>
+                <path class="crest" d="M0 96 C 180 40, 360 40, 560 88 S 940 150, 1140 92 S 1360 40, 1440 70"/>
+                <path class="d2" d="M0 132 C 220 96, 420 120, 640 140 S 1060 104, 1260 126 S 1400 146, 1440 138 L1440 180 L0 180 Z"/>
+                <path class="d3" d="M0 164 C 300 150, 620 172, 900 162 S 1300 150, 1440 160 L1440 180 L0 180 Z"/>
+            </svg>
+        </section>
+
+        <!-- LEISTE -->
+        <section class="pillars" aria-label="Kurz gesagt">
+            <div class="container">
+                <ul class="pillars__list">
+                    <li>Live-Podcast und Gruppenlegung, jeden Monat</li>
+                    <li>Tarot, Astrologie und okkultes Wissen im echten Leben angewendet</li>
+                    <li>Ein geschützter Raum für Menschen, die wachsen wollen</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- I · DIE LÜCKE -->
+        <section class="section">
+            <div class="container max-w-800 text-center">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">I</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Wissen allein verwandelt nichts</h2>
+                </header>
+                <div class="reveal">
+                    <div class="text-block">
+                        <p>Spirituelles Wissen gibt es genug: Bücher, Videos, Kurse, Sprüche auf Instagram. Und trotzdem ändert sich oft nichts. Weil zwischen Wissen und Leben eine Lücke ist.</p>
+                        <p>Du spürst, dass mehr in dir steckt. Du willst:</p>
+                    </div>
+                    <ul class="list-stars">
+                        <li>Illusionen auflösen, die dich klein halten</li>
+                        <li>loslassen, was nicht mehr zu dir gehört</li>
+                        <li>innere Ruhe statt Dauerlauf</li>
+                        <li>dein eigenes Leben leben, nicht das, was andere von dir erwarten</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="ornament ornament--wide" aria-hidden="true"><i></i><b></b><i></i></div>
+
+        <!-- II · MAGNUM OPUS -->
+        <section class="section">
+            <div class="container max-w-800">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">II</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Das große Werk</h2>
+                </header>
+                <div class="text-block reveal">
+                    <p>In der Alchemie heißt es <strong>Magnum Opus</strong>: Aus Blei wird Gold. Gemeint war nie nur Metall. Gemeint war immer der Mensch selbst.</p>
+                    <p>Wir nennen das: den eigenen Stein schleifen. Jeden Tag ein bisschen. Nicht allein, sondern mit Menschen, die denselben Weg gehen.</p>
+                </div>
+                <p class="quote reveal">„Ich schleife meinen Stein.“</p>
+            </div>
+        </section>
+
+        <!-- III · WAS DICH ERWARTET -->
+        <section id="inhalt" class="section section--raised">
+            <div class="container">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">III</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Was dich erwartet</h2>
+                    <p class="section-head__lead">Anwendung statt Gelaber. Echte Geschichten aus echtem Leben.</p>
+                </header>
+
+                <div class="offers">
+                    <article class="offer tilt-card reveal">
+                        <div class="offer__frame">
+                            <span class="offer__numeral">I</span>
+                            <div class="ornament"><i></i><b></b><i></i></div>
+                            <h3 class="offer__title">Bonus-Podcast live</h3>
+                            <span class="offer__meta">Jeden Monat</span>
+                            <p class="offer__text">Wir sprechen live über das, was wir wirklich erleben, und beantworten deine Fragen. Verpasst? Die Aufzeichnung wartet auf dich.</p>
+                        </div>
+                    </article>
+                    <article class="offer tilt-card reveal">
+                        <div class="offer__frame">
+                            <span class="offer__numeral">II</span>
+                            <div class="ornament"><i></i><b></b><i></i></div>
+                            <h3 class="offer__title">Gruppenlegung</h3>
+                            <span class="offer__meta">Jeden Monat · live</span>
+                            <p class="offer__text">Wir legen die Karten für die Community und schauen gemeinsam, was sie uns zeigen.</p>
+                        </div>
+                    </article>
+                    <article class="offer tilt-card reveal">
+                        <div class="offer__frame">
+                            <span class="offer__numeral">III</span>
+                            <div class="ornament"><i></i><b></b><i></i></div>
+                            <h3 class="offer__title">Gelebtes Wissen</h3>
+                            <span class="offer__meta">Tarot · Astrologie · Okkultes Wissen</span>
+                            <p class="offer__text">Wie wir die Werkzeuge für Entscheidungen, Beziehungen, Arbeit und Reisen nutzen. Ganz konkret.</p>
+                        </div>
+                    </article>
+                    <article class="offer tilt-card reveal">
+                        <div class="offer__frame">
+                            <span class="offer__numeral">IV</span>
+                            <div class="ornament"><i></i><b></b><i></i></div>
+                            <h3 class="offer__title">Geschützter Raum</h3>
+                            <span class="offer__meta">Nur für Mitglieder</span>
+                            <p class="offer__text">Eine geschlossene Community von Menschen, die bewusst wachsen wollen. Kein Lärm, keine Werbung, keine Bewertung.</p>
+                        </div>
+                    </article>
+                </div>
+                <p class="offers-note reveal">Dazu: Mitglieder bekommen Rabatt auf alle persönlichen Readings mit Filip und Jan.</p>
+            </div>
+        </section>
+
+        <!-- IV · ÜBER UNS -->
+        <section id="wir" class="section">
+            <div class="container">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">IV</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Zwei Lebenskünstler</h2>
+                    <p class="section-head__lead">Immer unterwegs, frei, und wir nutzen genau das, worüber wir sprechen. Bei den Steinschleifern zeigen wir dir, wie.</p>
+                </header>
+                <div class="readers">
+                    <article class="reader reveal">
+                        <div class="card">
+                            <div class="card__frame">
+                                <span class="card__numeral">I</span>
+                                <div class="card__art"><img src="/images/web/filip.webp" alt="Filip Strüven" width="447" height="447"></div>
+                                <span class="card__name">Filip Strüven</span>
+                            </div>
+                        </div>
+                        <div class="reader__text">
+                            <p>Filip hat sich tief mit den alten Symbolsprachen beschäftigt: Mythologie, Alchemie, esoterische Überlieferungen und die Tiefenpsychologie C. G. Jungs. Für ihn ist Tarot keine Wahrsagerei, sondern ein Spiegel und eine Karte.</p>
+                            <p>Als <strong>DaStarchild</strong> teilt er diese Arbeit mit einem weltweiten Publikum.</p>
+                            <div class="stats">
+                                <div><div class="stat__number">35M+</div><div class="stat__label">Menschen erreicht</div></div>
+                                <div><div class="stat__number">350K+</div><div class="stat__label">Follower</div></div>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="reader reveal">
+                        <div class="card">
+                            <div class="card__frame">
+                                <span class="card__numeral">II</span>
+                                <div class="card__art"><img src="/images/web/jan.webp" alt="Jan Polifka" width="698" height="930"></div>
+                                <span class="card__name">Jan Polifka</span>
+                            </div>
+                        </div>
+                        <div class="reader__text">
+                            <p>Jan verbindet Persönlichkeitsentwicklung mit gelebter Spiritualität: pragmatisch, radikal ehrlich und ohne Dogmen. Er ist um die Welt gereist, von Teotihuacán über Gizeh bis Angkor Wat, um die mystischen Traditionen nicht nur zu studieren, sondern zu erleben.</p>
+                            <p>Host von <strong>„Iraner Jones untersucht“</strong>.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- V · FÜR WEN -->
+        <section class="section section--raised">
+            <div class="container max-w-800 text-center">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">V</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Für wen das ist</h2>
+                </header>
+                <div class="reveal">
+                    <ul class="list-stars">
+                        <li>Du willst bewusst wachsen und suchst Menschen, die das auch wollen</li>
+                        <li>Du hast materiell viel erreicht und spürst, dass etwas fehlt</li>
+                        <li>Du bist offen für Tarot, Astrologie und Symbolik, aber genervt von leeren Sprüchen</li>
+                    </ul>
+                    <div class="text-block">
+                        <p><strong>Nicht für dich</strong>, wenn du jemanden suchst, der dir die Zukunft vorhersagt, oder nur konsumieren willst, ohne etwas zu verändern.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VI · START -->
+        <section id="start" class="section">
+            <div class="container max-w-800 text-center">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">VI</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Start in den Rauhnächten</h2>
+                </header>
+                <div class="text-block reveal">
+                    <p class="countdown-big" data-countdown="2026-12-21T00:00:00+01:00" hidden>Noch <b></b> bis zum Start</p>
+                    <p>Die Steinschleifer öffnen am <strong>21. Dezember</strong>, zur Wintersonnenwende.</p>
+                    <p>In den Rauhnächten gehen wir gemeinsam durch zwölf Nächte: jede Nacht eine Karte und eine Botschaft von uns. Zum Abschluss treffen wir uns live und schauen auf das neue Jahr.</p>
+                    <p>Auf der Warteliste bekommst du <strong>48 Stunden früher Zugang</strong> und hast die besten Chancen auf das Gründungsangebot.</p>
+                </div>
+
+                <div class="offers offers--single reveal">
+                    <article class="offer offer--featured">
+                        <span class="seal">Gründung</span>
+                        <div class="offer__frame">
+                            <span class="offer__numeral">I</span>
+                            <div class="ornament"><i></i><b></b><i></i></div>
+                            <h3 class="offer__title">Gründungsmitglied</h3>
+                            <span class="offer__meta">Nur für die ersten 10</span>
+                            <p class="offer__price-old">regulär <s>55 €</s> / Monat</p>
+                            <p class="offer__price">33<small>€ / Monat</small></p>
+                            <p class="offer__text">Dein Gründungsangebot gilt für immer, solange du dabei bist. Du sparst jeden Monat 22 €. Monatlich kündbar.</p>
+                            <a href="#warteliste" class="btn btn-primary btn-block">Platz sichern</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- VII · FRAGEN -->
+        <section id="fragen" class="section section--raised">
+            <div class="container max-w-800">
+                <header class="section-head reveal">
+                    <span class="section-head__numeral">VII</span>
+                    <div class="ornament"><i></i><b></b><i></i></div>
+                    <h2 class="section-head__title">Häufige Fragen</h2>
+                </header>
+                <div class="faq reveal">
+                    <details>
+                        <summary>Muss ich mich mit Tarot auskennen?</summary>
+                        <div class="faq__answer">Nein. Du kannst bei null anfangen. Wichtig ist nur, dass du wirklich etwas verändern willst.</div>
+                    </details>
+                    <details>
+                        <summary>Wann ist der Live-Podcast?</summary>
+                        <div class="faq__answer">Einmal im Monat zu einem festen Termin. Wenn du nicht live dabei sein kannst, schaust du die Aufzeichnung.</div>
+                    </details>
+                    <details>
+                        <summary>Wo findet die Community statt?</summary>
+                        <div class="faq__answer">Auf Skool, im Browser oder in der App auf deinem Handy.</div>
+                    </details>
+                    <details>
+                        <summary>Kann ich jederzeit kündigen?</summary>
+                        <div class="faq__answer">Ja, monatlich.</div>
+                    </details>
+                    <details>
+                        <summary>Was passiert, wenn ich mich auf die Warteliste setze?</summary>
+                        <div class="faq__answer">Du bekommst von uns eine Mail, sobald die Türen öffnen, 48 Stunden bevor es öffentlich losgeht. Die Warteliste ist kostenlos und verpflichtet dich zu nichts.</div>
+                    </details>
+                    <details>
+                        <summary>Ersetzt das eine Therapie oder Beratung?</summary>
+                        <div class="faq__answer">Nein. Die Steinschleifer sind ein Raum für Reflexion und Wachstum und ersetzen keine ärztliche, psychologische oder rechtliche Beratung.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- WARTELISTE -->
+        <section id="warteliste" class="section">
+            <div class="container">
+                <div class="newsletter reveal">
+                    <div class="newsletter__frame">
+                        <div class="ornament" style="margin-top: 16px;"><i></i><b></b><i></i></div>
+                        <h2 class="section-title">Dein Stein wartet.</h2>
+                        <p style="margin-top: 16px;">Trag dich auf die Warteliste ein. Du erfährst als Erstes, wenn die Steinschleifer öffnen, und hast die besten Chancen auf das Gründungsangebot.</p>
+                        <form class="nl-form" action="/newsletter.php" method="post" novalidate>
+                            <input type="hidden" name="list" value="steinschleifer">
+                            <div class="nl-form__row">
+                                <label class="sr-only" for="ws-email">Deine E-Mail-Adresse</label>
+                                <input class="nl-form__input" id="ws-email" type="email" name="email" placeholder="deine@email.de" autocomplete="email" required maxlength="255">
+                                <button class="btn btn-primary nl-form__btn" type="submit">Auf die Warteliste</button>
+                            </div>
+                            <input class="nl-form__hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+                            <label class="nl-form__consent">
+                                <input type="checkbox" name="consent" value="1" required>
+                                <span>Ich möchte über den Start der Steinschleifer und Neues von Sand der Zeit per Mail informiert werden und kann mich jederzeit wieder abmelden. Mehr dazu in der <a href="/datenschutz.html">Datenschutzerklärung</a>.</span>
+                            </label>
+                            <p class="nl-form__msg" role="status" aria-live="polite"></p>
+                        </form>
+                        <div class="hosts">
+                            <img src="/images/web/filip.webp" alt="" width="44" height="44">
+                            <img src="/images/web/jan.webp" alt="" width="44" height="44">
+                            <p>Mit <strong>Filip Strüven</strong> (DaStarchild, 350K Follower) und <strong>Jan Polifka</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <img src="/images/web/logo-mark.webp" alt="" class="footer-logo-icon" width="48" height="48">
+                <span>Sand der Zeit</span>
+            </div>
+            <div class="footer-social">
+                <a href="https://www.youtube.com/playlist?list=PLFU_TdKb4AUg" target="_blank" rel="noopener">YouTube</a>
+                <a href="https://open.spotify.com/show/0ONOgXZlhuov6bskAmP6Zt" target="_blank" rel="noopener">Spotify</a>
+                <a href="https://www.instagram.com/sand.der.zeit/" target="_blank" rel="noopener">Instagram</a>
+                <a href="https://www.tiktok.com/@sand.der.zeit" target="_blank" rel="noopener">TikTok</a>
+            </div>
+            <div class="footer-links">
+                <a href="/">Readings</a>
+                <a href="mailto:info@sandderzeit.de">Kontakt</a>
+                <a href="/imprint.html">Impressum</a>
+                <a href="/datenschutz.html">Datenschutz</a>
+                <a href="/agb.html">AGB</a>
+            </div>
+            <p class="copyright">© 2026 Sand der Zeit. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script src="/script.js" type="module"></script>
+</body>
+
+</html>

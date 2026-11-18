@@ -106,9 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-/* ─── Newsletter (eigenes Formular, Anmeldung läuft über /newsletter.php zu Mailjet) ─── */
-const nlForm = document.querySelector('.nl-form')
-if (nlForm) {
+/* ─── Newsletter & Warteliste (eigene Formulare, Anmeldung läuft über /newsletter.php zu Mailjet) ─── */
+document.querySelectorAll('.nl-form').forEach((nlForm) => {
   const msg = nlForm.querySelector('.nl-form__msg')
   const btn = nlForm.querySelector('button[type="submit"]')
   const say = (text, kind) => { msg.textContent = text; msg.className = 'nl-form__msg' + (kind ? ' is-' + kind : '') }
@@ -123,7 +122,7 @@ if (nlForm) {
       const res = await fetch('/newsletter.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, consent: true, website: nlForm.website.value }),
+        body: JSON.stringify({ email, consent: true, website: nlForm.website.value, list: nlForm.list ? nlForm.list.value : 'newsletter' }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok || !data.ok) throw new Error(data.error || 'fail')
@@ -135,4 +134,13 @@ if (nlForm) {
       btn.disabled = false
     }
   })
-}
+})
+
+/* ─── Countdown bis zum Start (Steinschleifer) ─── */
+document.querySelectorAll('[data-countdown]').forEach((el) => {
+  const target = new Date(el.dataset.countdown).getTime()
+  const days = Math.ceil((target - Date.now()) / 86400000)
+  if (days < 1) return
+  el.querySelector('b').textContent = days === 1 ? '1 Tag' : days + ' Tage'
+  el.hidden = false
+})

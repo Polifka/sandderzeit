@@ -7,6 +7,10 @@
 
 const MAILJET_SUBSCRIBE_URL = 'https://155tu.mjt.lu/wgt/155tu/09ln/subscribe?c=64dd593f';
 
+// Warteliste "Die Steinschleifer": Hier die subscribe-Adresse eines eigenen Mailjet-Formulars eintragen.
+// Solange das leer ist, landen Eintragungen auf der normalen Newsletter-Liste.
+const MAILJET_STEINSCHLEIFER_URL = '';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -30,7 +34,9 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 255) out(400,
 if (empty($in['consent'])) out(400, ['ok' => false, 'error' => 'consent']);
 
 $payload = json_encode(['Email' => $email, 'Fields' => []]);
-$ch = curl_init(MAILJET_SUBSCRIBE_URL);
+$list = (string)($in['list'] ?? 'newsletter');
+$target = ($list === 'steinschleifer' && MAILJET_STEINSCHLEIFER_URL !== '') ? MAILJET_STEINSCHLEIFER_URL : MAILJET_SUBSCRIBE_URL;
+$ch = curl_init($target);
 curl_setopt_array($ch, [
     CURLOPT_POST => true,
     CURLOPT_POSTFIELDS => $payload,

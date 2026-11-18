@@ -77,14 +77,14 @@
 
     <main class="tool">
         <h1>Thumbnail-Werkzeug</h1>
-        <p class="lead">Rahmen, Schrift und Siegel kommen automatisch aus dem Designsystem. Geh die Schritte rechts von oben nach unten durch. Den Prompt für deine KI-Szene baut dir Schritt I.</p>
+        <p class="lead">Schrift, Balken und Siegel kommen automatisch aus dem Designsystem. Geh die Schritte rechts von oben nach unten durch. Den Prompt für deine KI-Szene baut dir Schritt I.</p>
 
         <div class="tool__grid">
             <div class="tool__preview">
                 <canvas id="out" width="1280" height="720" aria-label="Vorschau des Thumbnails"></canvas>
                 <div class="bar">
                     <canvas id="mini" width="246" height="138" aria-hidden="true"></canvas>
-                    <p>Text, Karten und Pfeile in der Vorschau mit der Maus verschieben. Links: so groß ist das Thumbnail auf dem Handy.</p>
+                    <p>Text, Person, Karten und Pfeile in der Vorschau mit der Maus verschieben. Links: so groß ist das Thumbnail auf dem Handy.</p>
                     <div class="actions">
                         <label class="safe-toggle" title="Taste S"><input type="checkbox" id="safe">YouTube Safe Area</label>
                         <button type="button" class="btn btn-primary" id="dlPng">PNG laden</button>
@@ -125,31 +125,49 @@
                 </details>
 
                 <details class="step" open>
-                    <summary><span>II</span>Szene</summary>
+                    <summary><span>II</span>Layout &amp; Szene</summary>
                     <div class="step__body">
+                        <div class="seg" role="radiogroup" aria-label="Layout">
+                            <label><input type="radio" name="layout" value="kampagne" checked>Kampagne</label>
+                            <label><input type="radio" name="layout" value="klassisch">Klassisch</label>
+                        </div>
+                        <span class="hint">Kampagne: Bild randlos, Person mit Leuchten, Headline in Balken unten links, großes Siegel. Klassisch: Pergamentrahmen wie bisher.</span>
                         <label class="drop"><input type="file" id="scene" accept="image/*"><b>Szene wählen oder hierher ziehen</b><small>16:9, ohne Text, unteres Drittel dunkel</small></label>
                         <div class="field">
-                            <div class="row"><label for="dark">Untere Zone abdunkeln</label><output data-for="dark"></output></div>
+                            <div class="row"><label for="dark">Hintergrund abdunkeln</label><output data-for="dark"></output></div>
                             <input type="range" id="dark" min="0" max="100" value="60">
                             <span class="hint">Ganz nach rechts, wenn unten schon Schrift im Bild ist.</span>
                         </div>
                     </div>
                 </details>
 
+                <details class="step" id="stepPerson" open>
+                    <summary><span>III</span>Person</summary>
+                    <div class="step__body">
+                        <label class="drop"><input type="file" id="person" accept="image/*"><b>Freigestellte Person wählen</b><small>PNG mit transparentem Hintergrund, oder mit Cmd+V einfügen</small></label>
+                        <span class="hint">Am Mac: Foto in Vorschau oder Fotos öffnen, rechte Maustaste auf die Person, „Motiv kopieren“, dann hier Cmd+V drücken.</span>
+                        <div class="two">
+                            <div class="field"><div class="row"><label for="psize">Größe</label><output data-for="psize"></output></div><input type="range" id="psize" min="40" max="180" value="100"></div>
+                            <div class="field"><div class="row"><label for="pglow">Leuchten</label><output data-for="pglow"></output></div><input type="range" id="pglow" min="0" max="100" value="60"></div>
+                        </div>
+                        <button type="button" class="link-btn" id="personDel">Person entfernen</button>
+                    </div>
+                </details>
+
                 <details class="step" open>
-                    <summary><span>III</span>Headline</summary>
+                    <summary><span>IV</span>Headline</summary>
                     <div class="step__body">
                         <div class="field"><label for="l1">Zeile 1</label><input type="text" id="l1" value="Die hermetischen Gesetze"></div>
                         <div class="field"><label for="l2">Zeile 2 · groß</label><input type="text" id="l2" value="Entschlüsselt"></div>
                         <div class="two">
-                            <div class="field"><label for="color2">Farbe Zeile 2</label><select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select></div>
+                            <div class="field"><label for="color2">Farbe Zeile 2 / Balken</label><select id="color2"><option value="gold">Gold</option><option value="ink">Sand</option></select></div>
                             <div class="field"><div class="row"><label for="tsize">Größe</label><output data-for="tsize"></output></div><input type="range" id="tsize" min="50" max="150" value="70" style="margin-top:14px"></div>
                         </div>
                     </div>
                 </details>
 
                 <details class="step" open>
-                    <summary><span>IV</span>Art &amp; Siegel</summary>
+                    <summary><span>V</span>Art &amp; Siegel</summary>
                     <div class="step__body">
                         <div class="seg" role="radiogroup" aria-label="Art">
                             <label><input type="radio" name="variant" value="main" checked>Hauptshow</label>
@@ -164,7 +182,7 @@
                 </details>
 
                 <details class="step">
-                    <summary><span>V</span>Tarotkarten</summary>
+                    <summary><span>VI</span>Tarotkarten</summary>
                     <div class="step__body">
                         <label class="drop"><input type="file" id="cards" accept="image/*" multiple><b>Bis zu 3 Karten wählen</b><small>oder hierher ziehen</small></label>
                         <div class="field">
@@ -175,7 +193,7 @@
                 </details>
 
                 <details class="step" id="stepArrows">
-                    <summary><span>VI</span>Pfeile</summary>
+                    <summary><span>VII</span>Pfeile</summary>
                     <div class="step__body">
                         <button type="button" class="btn btn-sm" id="arrowAdd" style="align-self:flex-start">Pfeil hinzufügen</button>
                         <span class="hint" id="arrowInfo"></span>
@@ -206,6 +224,7 @@
         let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null, guides = { v: false, h: false };
         const SNAP = 12;
         let arrows = [], sel = -1, exporting = false;
+        let person = null, pPos = null, pBox = null;
         const logo = $('logo');
 
         // ── Hilfen ──
@@ -293,10 +312,147 @@
             ctx.restore();
         }
 
+        // ── Kampagnen-Layout (randlos, Person mit Leuchten, Headline in Balken) ──
+        const defaultPerson = () => { const h = H * 0.98, w = person.width * h / person.height; return { x: Math.round(W - w * 0.92), y: Math.round(H - h + 10) }; };
+        function drawCampaign(highlight) {
+            // Hintergrund randlos
+            ctx.fillStyle = '#1c1610'; ctx.fillRect(0, 0, W, H);
+            if (scene) {
+                const s = Math.max(W / scene.width, H / scene.height), w = scene.width * s, h = scene.height * s;
+                ctx.drawImage(scene, (W - w) / 2, (H - h) / 2, w, h);
+            } else {
+                const g = ctx.createRadialGradient(W * 0.7, H * 0.45, 0, W * 0.7, H * 0.45, 560);
+                g.addColorStop(0, 'rgba(240,195,90,0.5)'); g.addColorStop(1, 'rgba(240,195,90,0)');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = 'rgba(241,228,198,0.55)'; ctx.font = 'italic 500 30px "Cormorant Garamond", Georgia, serif'; ctx.textAlign = 'center';
+                ctx.fillText('Lade rechts eine Szene und eine Person hoch', W / 2, H * 0.4); ctx.textAlign = 'left';
+            }
+            // Abdunkeln: unten und links, damit die Balken stehen
+            const k = +$('dark').value / 100;
+            if (k > 0) {
+                let g = ctx.createLinearGradient(0, H * 0.45, 0, H);
+                g.addColorStop(0, 'rgba(18,14,9,0)'); g.addColorStop(1, `rgba(18,14,9,${0.85 * k})`);
+                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+                g = ctx.createLinearGradient(0, 0, W * 0.65, 0);
+                g.addColorStop(0, `rgba(18,14,9,${0.55 * k})`); g.addColorStop(1, 'rgba(18,14,9,0)');
+                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+            }
+            // Vignette
+            const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, W * 0.75);
+            v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.45)');
+            ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+
+            // Karten
+            drawCards();
+
+            // Person mit goldenem Leuchten
+            pBox = null;
+            if (person) {
+                if (!pPos) pPos = defaultPerson();
+                const ps = +$('psize').value / 100, ph = H * 0.98 * ps, pw = person.width * ph / person.height;
+                const glow = +$('pglow').value / 100;
+                if (glow > 0) {
+                    ctx.save();
+                    ctx.shadowColor = highlight ? 'rgba(214,110,60,0.95)' : 'rgba(240,195,90,0.95)';
+                    ctx.shadowBlur = 70 * glow; ctx.drawImage(person, pPos.x, pPos.y, pw, ph);
+                    ctx.shadowBlur = 18 * glow; ctx.drawImage(person, pPos.x, pPos.y, pw, ph);
+                    ctx.restore();
+                }
+                ctx.drawImage(person, pPos.x, pPos.y, pw, ph);
+                pBox = { x: pPos.x, y: pPos.y, w: pw, h: ph };
+                if (drag && drag.type === 'person') { ctx.save(); ctx.setLineDash([8, 6]); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.strokeRect(pBox.x, pBox.y, pBox.w, pBox.h); ctx.restore(); }
+            }
+
+            // Headline in Balken, unten links
+            const l1 = $('l1').value.trim().toUpperCase(), l2 = $('l2').value.trim().toUpperCase();
+            const ts = +$('tsize').value / 100;
+            const maxW = W * 0.82;
+            const fit = (text, size) => { do { ctx.font = `900 ${size}px Cinzel`; size -= 2; } while (size > 20 && ctx.measureText(text).width > maxW); return size + 2; };
+            const s2 = fit(l2 || 'M', Math.round(118 * ts)), s1 = fit(l1 || 'M', Math.round(74 * ts));
+            const bar = (text, size, x, bottom, fill, ink = C.ground) => {
+                ctx.font = `900 ${size}px Cinzel`;
+                const m = ctx.measureText(text), cap = m.actualBoundingBoxAscent;
+                const padX = Math.round(size * 0.28), padY = Math.round(size * 0.2);
+                const w = m.width + padX * 2, h = cap + padY * 2, y = bottom - h;
+                ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 26; ctx.shadowOffsetY = 8;
+                ctx.fillStyle = fill; ctx.fillRect(x, y, w, h); ctx.restore();
+                ctx.fillStyle = ink; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+                ctx.fillText(text, x + padX, y + padY + cap);
+                return { x, y, w, h };
+            };
+            const x0 = 48 + textOff.x, bottom = H - 50 + textOff.y;
+            const fill2 = $('color2').value === 'gold' ? C.gold : C.ink;
+            let b2 = null, b1 = null;
+            if (l2) b2 = bar(l2, s2, x0, bottom, fill2);
+            if (l1) b1 = highlight ? bar(l1, s1, x0, b2 ? b2.y : bottom, C.rost, C.ink) : bar(l1, s1, x0, b2 ? b2.y : bottom, b2 ? C.ink : fill2);
+            textBox = null;
+            if (b1 || b2) {
+                const top = (b1 || b2).y, bot = (b2 || b1).y + (b2 || b1).h, w = Math.max(b1 ? b1.w : 0, b2 ? b2.w : 0);
+                textBox = { x: x0 - 8, y: top - 8, w: w + 16, h: bot - top + 16 };
+                if (drag && drag.type === 'text') { ctx.save(); ctx.setLineDash([8, 6]); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.strokeRect(textBox.x, textBox.y, textBox.w, textBox.h); ctx.restore(); }
+            }
+
+            // Pfeile
+            arrows.forEach(drawArrow);
+
+            // Großes rundes Siegel oben links
+            const r = 74, cx = 48 + r, cy = 40 + r;
+            ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = highlight ? C.rost : C.ground; ctx.fill(); ctx.restore();
+            if (logo.complete && logo.naturalWidth) {
+                ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r - 8, 0, Math.PI * 2); ctx.clip();
+                const ls = (r - 8) * 2; ctx.drawImage(logo, cx - ls / 2, cy - ls / 2, ls, ls); ctx.restore();
+            }
+            ctx.beginPath(); ctx.arc(cx, cy, r - 3, 0, Math.PI * 2); ctx.strokeStyle = highlight ? C.rost : C.gold; ctx.lineWidth = 6; ctx.stroke();
+            if (highlight) { ctx.beginPath(); ctx.arc(cx, cy, r - 7, 0, Math.PI * 2); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.stroke(); }
+            const pill = (text, x, y, fill, ink, stroke) => {
+                ctx.font = '700 18px Cinzel'; const gap = 3, tw = spacedWidth(ctx, text, gap), pw = tw + 32, ph = 34;
+                if (x === null) x = cx - pw / 2;
+                rr(ctx, x, y, pw, ph, ph / 2); ctx.fillStyle = fill; ctx.fill();
+                if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.5; ctx.stroke(); }
+                ctx.fillStyle = ink; ctx.textBaseline = 'middle'; spaced(ctx, text, x + 16, y + ph / 2 + 1, gap); ctx.textBaseline = 'alphabetic';
+            };
+            // Folgennummer unter dem Siegel, „Highlight“ rechts daneben
+            const ep = parseInt($('ep').value, 10);
+            if (ep > 0) pill(roman(ep), null, cy + r - 14, highlight ? C.rost : C.gold, highlight ? C.ink : C.ground, highlight ? C.gold : null);
+            if (highlight) pill('HIGHLIGHT', cx + r + 14, cy - 17, C.rost, C.ink, C.gold);
+
+        }
+
+        // Karten zeichnen (beide Layouts)
+        function drawCards() {
+            const cw = +$('csize').value, ch = Math.round(cw * 12 / 7);
+            for (const card of cards) {
+                const { img, x, y } = card; card.w = cw; card.h = ch;
+                ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
+                rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
+                ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
+                const k2 = Math.max((cw - 10) / img.width, (ch - 10) / img.height);
+                ctx.drawImage(img, x + 5 + ((cw - 10) - img.width * k2) / 2, y + 5 + ((ch - 10) - img.height * k2) / 2, img.width * k2, img.height * k2);
+                ctx.restore();
+                rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = (drag && drag.c === card) ? C.ink : C.gold; ctx.lineWidth = 2; ctx.stroke();
+            }
+        }
+
+        // Vorschau-Ebenen (Mini, Safe Area, Auswahl, Hilfslinien)
+        function drawOverlays() {
+            mini.clearRect(0, 0, 246, 138); mini.drawImage(out, 0, 0, 246, 138);
+            if (!exporting && $('safe').checked) drawSafe();
+            if (!exporting && arrows[sel]) outlineArrow(arrows[sel]);
+            if (drag && (guides.v || guides.h)) {
+                ctx.save(); ctx.strokeStyle = '#f0c35a'; ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
+                if (guides.v) { ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke(); }
+                if (guides.h) { ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke(); }
+                ctx.restore();
+            }
+        }
+
         // ── Zeichnen ──
         function draw() {
             const highlight = document.querySelector('input[name=variant]:checked').value === 'highlight';
             ctx.clearRect(0, 0, W, H);
+            if (document.querySelector('input[name=layout]:checked').value === 'kampagne') { drawCampaign(highlight); drawOverlays(); return; }
+            pBox = null;
 
             // Rahmen
             ctx.drawImage(highlight ? rostFrame : parchment, 0, 0);
@@ -324,17 +480,7 @@
                 ctx.fillStyle = g; ctx.fillRect(sx, start, sw, sy + sh - start);
             }
             // Karten (frei verschiebbar)
-            const cw = +$('csize').value, ch = Math.round(cw * 12 / 7);
-            for (const card of cards) {
-                const { img, x, y } = card; card.w = cw; card.h = ch;
-                ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
-                rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
-                ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
-                const k2 = Math.max((cw - 10) / img.width, (ch - 10) / img.height);
-                ctx.drawImage(img, x + 5 + ((cw - 10) - img.width * k2) / 2, y + 5 + ((ch - 10) - img.height * k2) / 2, img.width * k2, img.height * k2);
-                ctx.restore();
-                rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = (drag && drag.c === card) ? C.ink : C.gold; ctx.lineWidth = 2; ctx.stroke();
-            }
+            drawCards();
             ctx.restore();
             // innere Kante
             rr(ctx, sx, sy, sw, sh, 14); ctx.strokeStyle = highlight ? '#4a1a0c' : C.edge; ctx.lineWidth = 2; ctx.stroke();
@@ -421,17 +567,19 @@
             cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
         });
         $('csize').addEventListener('input', draw);
-        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; $('tsize').value = 70; updateOutputs(); draw(); });
+        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; pPos = null; $('psize').value = 100; $('tsize').value = 70; updateOutputs(); draw(); });
 
         // Drag and Drop in der Vorschau
         const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
         const inText = (p) => !!textBox && p.x >= textBox.x && p.x <= textBox.x + textBox.w && p.y >= textBox.y && p.y <= textBox.y + textBox.h;
+        const inPerson = (p) => !!pBox && p.x >= pBox.x && p.x <= pBox.x + pBox.w && p.y >= pBox.y && p.y <= pBox.y + pBox.h;
         const hit = (p) => { for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i]; if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) return i; } return -1; };
         out.addEventListener('pointerdown', (e) => {
             const p = toCanvas(e), ai = hitArrow(p), i = hit(p);
             if (ai >= 0) { const a = arrows.splice(ai, 1)[0]; arrows.push(a); sel = arrows.length - 1; syncArrowUI(); drag = { type: 'arrow', a, dx: p.x - a.x, dy: p.y - a.y }; }
             else if (i >= 0) { const c = cards.splice(i, 1)[0]; cards.push(c); drag = { type: 'card', c, dx: p.x - c.x, dy: p.y - c.y }; }
             else if (inText(p)) { drag = { type: 'text', dx: p.x - textOff.x, dy: p.y - textOff.y }; }
+            else if (inPerson(p)) { drag = { type: 'person', dx: p.x - pPos.x, dy: p.y - pPos.y }; }
             else { if (sel >= 0) { sel = -1; syncArrowUI(); draw(); } return; }
             out.setPointerCapture(e.pointerId); out.style.cursor = 'grabbing'; e.preventDefault(); draw();
         });
@@ -443,6 +591,8 @@
                 guides.h = false;
                 if (textBox) { const cy = textBox.y + textBox.h / 2 + (ny - textOff.y); guides.h = Math.abs(cy - H / 2) < SNAP; if (guides.h) ny += Math.round(H / 2 - cy); }
                 textOff.x = nx; textOff.y = ny; draw();
+            } else if (drag && drag.type === 'person') {
+                pPos.x = Math.round(p.x - drag.dx); pPos.y = Math.round(p.y - drag.dy); guides = { v: false, h: false }; draw();
             } else if (drag && drag.type === 'arrow') {
                 const a = drag.a; let nx = Math.round(p.x - drag.dx), ny = Math.round(p.y - drag.dy);
                 guides.v = Math.abs(nx - W / 2) < SNAP; if (guides.v) nx = W / 2;
@@ -454,11 +604,22 @@
                 guides.h = Math.abs(ny + c.h / 2 - H / 2) < SNAP; if (guides.h) ny = Math.round(H / 2 - c.h / 2);
                 c.x = nx; c.y = ny; draw();
             }
-            else out.style.cursor = (hitArrow(p) >= 0 || hit(p) >= 0 || inText(p)) ? 'grab' : 'default';
+            else out.style.cursor = (hitArrow(p) >= 0 || hit(p) >= 0 || inText(p) || inPerson(p)) ? 'grab' : 'default';
         });
         const endDrag = () => { if (drag) { drag = null; guides = { v: false, h: false }; out.style.cursor = 'default'; draw(); } };
         out.addEventListener('pointerup', endDrag); out.addEventListener('pointercancel', endDrag);
-        ['l1', 'l2', 'ep', 'dark', 'color2', 'tsize'].forEach((id) => $(id).addEventListener('input', draw));
+        ['l1', 'l2', 'ep', 'dark', 'color2', 'tsize', 'psize', 'pglow'].forEach((id) => $(id).addEventListener('input', draw));
+        document.querySelectorAll('input[name=layout]').forEach((r) => r.addEventListener('change', () => { try { localStorage.setItem('sdz-layout', r.value); } catch {} draw(); }));
+        try { const l = localStorage.getItem('sdz-layout'); if (l) document.querySelector(`input[name=layout][value=${l}]`).checked = true; } catch {}
+        const setPerson = async (file) => { person = await loadImg(file); pPos = null; $('stepPerson') && ($('stepPerson').open = true); draw(); };
+        $('person').addEventListener('change', (e) => { if (e.target.files[0]) setPerson(e.target.files[0]); });
+        $('personDel').addEventListener('click', () => { person = null; pPos = null; $('person').value = ''; $('person').parentElement.querySelector('b').textContent = 'Freigestellte Person wählen'; draw(); });
+        // Bild aus der Zwischenablage (z. B. „Motiv kopieren“ am Mac) als Person einfügen
+        document.addEventListener('paste', (e) => {
+            if (e.target.closest('input[type=text], textarea')) return;
+            const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith('image/'));
+            if (item) { e.preventDefault(); setPerson(item.getAsFile()); $('person').parentElement.querySelector('b').textContent = 'Person aus Zwischenablage'; }
+        });
         // Safe Area an/aus (Checkbox oder Taste S), Einstellung wird gemerkt
         try { $('safe').checked = localStorage.getItem('sdz-safe') === '1'; } catch {}
         $('safe').addEventListener('change', () => { try { localStorage.setItem('sdz-safe', $('safe').checked ? '1' : '0'); } catch {} draw(); });
@@ -466,7 +627,8 @@
             if (e.key.toLowerCase() !== 's' || e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select')) return;
             $('safe').checked = !$('safe').checked; $('safe').dispatchEvent(new Event('change'));
         });
-        document.querySelectorAll('input[name=variant]').forEach((r) => r.addEventListener('change', draw));
+        // Highlight: Zeile 2 standardmäßig in Sand, Hauptshow in Gold (danach frei änderbar)
+        document.querySelectorAll('input[name=variant]').forEach((r) => r.addEventListener('change', () => { $('color2').value = r.value === 'highlight' ? 'ink' : 'gold'; draw(); }));
 
         const syncArrowUI = () => {
             const a = arrows[sel], on = !!a;
