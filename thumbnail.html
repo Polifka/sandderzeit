@@ -87,6 +87,7 @@
                     <p>Text, Person, Karten und Pfeile in der Vorschau mit der Maus verschieben. Links: so groß ist das Thumbnail auf dem Handy.</p>
                     <div class="actions">
                         <label class="safe-toggle" title="Taste S"><input type="checkbox" id="safe">YouTube Safe Area</label>
+                        <label class="safe-toggle" title="Taste D"><input type="checkbox" id="thirds">Drittel-Raster</label>
                         <button type="button" class="btn btn-primary" id="dlPng">PNG laden</button>
                         <button type="button" class="btn" id="dlJpg">JPG</button>
                     </div>
@@ -299,6 +300,22 @@
         const arrowLocal = (a, p) => { const dx = p.x - a.x, dy = p.y - a.y, r = -a.rot * Math.PI / 180; return { x: (dx * Math.cos(r) - dy * Math.sin(r)) / a.scale, y: (dx * Math.sin(r) + dy * Math.cos(r)) / a.scale }; };
         const hitArrow = (p) => { for (let i = arrows.length - 1; i >= 0; i--) { const l = arrowLocal(arrows[i], p); if (Math.abs(l.x) <= 115 && Math.abs(l.y) <= 62) return i; } return -1; };
 
+        // ── Drittel-Raster (Rule of Thirds) ──
+        function drawThirds() {
+            ctx.save();
+            const lines = [[W / 3, 0, W / 3, H], [2 * W / 3, 0, 2 * W / 3, H], [0, H / 3, W, H / 3], [0, 2 * H / 3, W, 2 * H / 3]];
+            for (const [x1, y1, x2, y2] of lines) {
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+                ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 4; ctx.stroke();
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.5; ctx.stroke();
+            }
+            for (const x of [W / 3, 2 * W / 3]) for (const y of [H / 3, 2 * H / 3]) {
+                ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fillStyle = 'rgba(240,195,90,0.95)'; ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.6)'; ctx.lineWidth = 2; ctx.stroke();
+            }
+            ctx.restore();
+        }
+
         // ── YouTube Safe Area ──
         // Bereiche, die YouTube über das Thumbnail legt (auf 1280×720 hochgerechnet):
         // Videolänge unten rechts, roter Fortschrittsbalken unten, Hover-Icons oben rechts.
@@ -437,21 +454,20 @@
         }
 
         // Karten zeichnen (beide Layouts)
+        // Höhe aus dem Seitenverhältnis des Kartenbilds
+        const cardH = (c) => Math.round(c.w * c.img.height / c.img.width);
         function drawCards() {
             const glow = +$('cglow').value / 100;
             for (const card of cards) {
-                const { img } = card, cw = card.w, ch = card.h = Math.round(cw * 12 / 7);
+                const { img } = card, cw = card.w, ch = card.h = cardH(card);
                 ctx.save();
                 ctx.translate(card.x + cw / 2, card.y + ch / 2); ctx.rotate((card.rot || 0) * Math.PI / 180);
                 const x = -cw / 2, y = -ch / 2;
                 ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
-                rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
-                if (glow > 0) { ctx.save(); ctx.shadowColor = 'rgba(240,195,90,0.95)'; ctx.shadowBlur = 60 * glow; rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.shadowBlur = 16 * glow; ctx.fill(); ctx.restore(); }
-                ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
-                const k2 = Math.max((cw - 10) / img.width, (ch - 10) / img.height);
-                ctx.drawImage(img, x + 5 + ((cw - 10) - img.width * k2) / 2, y + 5 + ((ch - 10) - img.height * k2) / 2, img.width * k2, img.height * k2);
-                ctx.restore();
-                rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.stroke();
+                rr(ctx, x, y, cw, ch, 6); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+                if (glow > 0) { ctx.save(); ctx.shadowColor = 'rgba(240,195,90,0.95)'; ctx.shadowBlur = 60 * glow; rr(ctx, x, y, cw, ch, 6); ctx.fillStyle = '#fff'; ctx.fill(); ctx.shadowBlur = 16 * glow; ctx.fill(); ctx.restore(); }
+                // Karte komplett zeigen, inklusive weißem Rand, nichts abschneiden
+                ctx.save(); rr(ctx, x, y, cw, ch, 6); ctx.clip(); ctx.drawImage(img, x, y, cw, ch); ctx.restore();
                 ctx.restore();
             }
         }
@@ -489,6 +505,7 @@
         function drawOverlays() {
             mini.clearRect(0, 0, 246, 138); mini.drawImage(out, 0, 0, 246, 138);
             if (!exporting && $('safe').checked) drawSafe();
+            if (!exporting && $('thirds').checked) drawThirds();
             if (!exporting && arrows[sel]) outlineArrow(arrows[sel]);
             if (!exporting && selCard && cards.includes(selCard)) drawSelection(selCard);
             if (drag && (guides.v || guides.h)) {
@@ -593,6 +610,7 @@
 
             // YouTube Safe Area (nur in der Vorschau, nie im Export)
             if (!exporting && $('safe').checked) drawSafe();
+            if (!exporting && $('thirds').checked) drawThirds();
 
             // Auswahl (nur in der Vorschau)
             if (!exporting && arrows[sel]) outlineArrow(arrows[sel]);
@@ -612,7 +630,7 @@
         $('szoom').addEventListener('input', draw);
         const layoutCards = () => {
             const cw = +$('csize').value, gap = 16, total = cards.length * cw + (cards.length - 1) * gap;
-            cards.forEach((c, i) => { c.w = cw; c.h = Math.round(cw * 12 / 7); c.rot = 0; c.x = (W - total) / 2 + i * (cw + gap); c.y = M + 18; });
+            cards.forEach((c, i) => { c.w = cw; c.h = cardH(c); c.rot = 0; c.x = (W - total) / 2 + i * (cw + gap); c.y = M + 18; });
             out.classList.toggle('has-cards', cards.length > 0);
         };
         $('cards').addEventListener('change', async (e) => {
@@ -620,7 +638,7 @@
             cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0, rot: 0 })); selCard = null; layoutCards(); draw();
         });
         // Regler setzt die Größe aller Karten (Mitte bleibt stehen)
-        $('csize').addEventListener('input', () => { const w = +$('csize').value; cards.forEach((c) => { const m = cardCenter(c); c.w = w; c.h = Math.round(w * 12 / 7); c.x = m.x - c.w / 2; c.y = m.y - c.h / 2; }); draw(); });
+        $('csize').addEventListener('input', () => { const w = +$('csize').value; cards.forEach((c) => { const m = cardCenter(c); c.w = w; c.h = cardH(c); c.x = m.x - c.w / 2; c.y = m.y - c.h / 2; }); draw(); });
         $('cglow').addEventListener('input', draw);
         $('cardsReset').addEventListener('click', () => { layoutCards(); selCard = null; textOff = { x: 0, y: 0 }; pPos = null; $('psize').value = 100; $('tsize').value = 70; updateOutputs(); draw(); });
 
@@ -660,7 +678,7 @@
             } else if (drag && drag.type === 'scale') {
                 const c = drag.c, m = cardCenter(c);
                 const w = Math.max(50, Math.min(520, Math.round(drag.w0 * Math.hypot(p.x - m.x, p.y - m.y) / drag.d0)));
-                c.w = w; c.h = Math.round(w * 12 / 7); c.x = m.x - c.w / 2; c.y = m.y - c.h / 2; draw();
+                c.w = w; c.h = cardH(c); c.x = m.x - c.w / 2; c.y = m.y - c.h / 2; draw();
             } else if (drag && drag.type === 'person') {
                 pPos.x = Math.round(p.x - drag.dx); pPos.y = Math.round(p.y - drag.dy); guides = { v: false, h: false }; draw();
             } else if (drag && drag.type === 'arrow') {
@@ -697,6 +715,12 @@
         // Safe Area an/aus (Checkbox oder Taste S), Einstellung wird gemerkt
         try { $('safe').checked = localStorage.getItem('sdz-safe') === '1'; } catch {}
         $('safe').addEventListener('change', () => { try { localStorage.setItem('sdz-safe', $('safe').checked ? '1' : '0'); } catch {} draw(); });
+        try { $('thirds').checked = localStorage.getItem('sdz-thirds') === '1'; } catch {}
+        $('thirds').addEventListener('change', () => { try { localStorage.setItem('sdz-thirds', $('thirds').checked ? '1' : '0'); } catch {} draw(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() !== 'd' || e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select')) return;
+            $('thirds').checked = !$('thirds').checked; $('thirds').dispatchEvent(new Event('change'));
+        });
         document.addEventListener('keydown', (e) => {
             if (e.target.closest('input, textarea, select')) return;
             if (selCard && (e.key === 'Delete' || e.key === 'Backspace')) { cards = cards.filter((c) => c !== selCard); selCard = null; e.preventDefault(); draw(); return; }
