@@ -134,6 +134,11 @@
                         <span class="hint">Kampagne: Bild randlos, Person mit Leuchten, Headline in Balken unten links, großes Siegel. Klassisch: Pergamentrahmen wie bisher.</span>
                         <label class="drop"><input type="file" id="scene" accept="image/*"><b>Szene wählen oder hierher ziehen</b><small>16:9, ohne Text, unteres Drittel dunkel</small></label>
                         <div class="field">
+                            <div class="row"><label for="szoom">Szene zoomen</label><output data-for="szoom"></output></div>
+                            <input type="range" id="szoom" min="100" max="300" value="100">
+                            <span class="hint">Verschieben: in der Vorschau auf eine freie Stelle klicken und ziehen. Doppelklick auf eine freie Stelle setzt die Szene zurück.</span>
+                        </div>
+                        <div class="field">
                             <div class="row"><label for="dark">Hintergrund abdunkeln</label><output data-for="dark"></output></div>
                             <input type="range" id="dark" min="0" max="100" value="60">
                             <span class="hint">Ganz nach rechts, wenn unten schon Schrift im Bild ist.</span>
@@ -189,6 +194,11 @@
                             <div class="row"><label for="csize">Kartengröße</label><output data-for="csize" data-unit=" px"></output></div>
                             <input type="range" id="csize" min="70" max="240" value="118">
                         </div>
+                        <div class="field">
+                            <div class="row"><label for="cglow">Leuchten</label><output data-for="cglow"></output></div>
+                            <input type="range" id="cglow" min="0" max="100" value="0">
+                        </div>
+                        <span class="hint">Karte anklicken: Ecken ziehen zum Vergrößern, oberen Punkt ziehen zum Drehen (mit Shift in 15°-Schritten). Entf löscht die Karte, Esc hebt die Auswahl auf.</span>
                     </div>
                 </details>
 
@@ -224,7 +234,15 @@
         let scene = null, cards = [], drag = null, textOff = { x: 0, y: 0 }, textBox = null, guides = { v: false, h: false };
         const SNAP = 12;
         let arrows = [], sel = -1, exporting = false;
-        let person = null, pPos = null, pBox = null;
+        let person = null, pPos = null, pBox = null, selCard = null, sceneOff = { x: 0, y: 0 }, sceneArea = null;
+        // Szene füllt die Fläche, Zoom und Verschiebung bleiben immer randlos (keine Lücken)
+        function drawScene(ax, ay, aw, ah) {
+            const z = +$('szoom').value / 100, s = Math.max(aw / scene.width, ah / scene.height) * z, w = scene.width * s, h = scene.height * s;
+            const mx = (w - aw) / 2, my = (h - ah) / 2;
+            sceneOff.x = Math.max(-mx, Math.min(mx, sceneOff.x)); sceneOff.y = Math.max(-my, Math.min(my, sceneOff.y));
+            ctx.drawImage(scene, ax + (aw - w) / 2 + sceneOff.x, ay + (ah - h) / 2 + sceneOff.y, w, h);
+            sceneArea = { x: ax, y: ay, w: aw, h: ah };
+        }
         const logo = $('logo');
 
         // ── Hilfen ──
@@ -318,8 +336,7 @@
             // Hintergrund randlos
             ctx.fillStyle = '#1c1610'; ctx.fillRect(0, 0, W, H);
             if (scene) {
-                const s = Math.max(W / scene.width, H / scene.height), w = scene.width * s, h = scene.height * s;
-                ctx.drawImage(scene, (W - w) / 2, (H - h) / 2, w, h);
+                drawScene(0, 0, W, H);
             } else {
                 const g = ctx.createRadialGradient(W * 0.7, H * 0.45, 0, W * 0.7, H * 0.45, 560);
                 g.addColorStop(0, 'rgba(240,195,90,0.5)'); g.addColorStop(1, 'rgba(240,195,90,0)');
@@ -421,17 +438,51 @@
 
         // Karten zeichnen (beide Layouts)
         function drawCards() {
-            const cw = +$('csize').value, ch = Math.round(cw * 12 / 7);
+            const glow = +$('cglow').value / 100;
             for (const card of cards) {
-                const { img, x, y } = card; card.w = cw; card.h = ch;
+                const { img } = card, cw = card.w, ch = card.h = Math.round(cw * 12 / 7);
+                ctx.save();
+                ctx.translate(card.x + cw / 2, card.y + ch / 2); ctx.rotate((card.rot || 0) * Math.PI / 180);
+                const x = -cw / 2, y = -ch / 2;
                 ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8;
                 rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.restore();
+                if (glow > 0) { ctx.save(); ctx.shadowColor = 'rgba(240,195,90,0.95)'; ctx.shadowBlur = 60 * glow; rr(ctx, x, y, cw, ch, 8); ctx.fillStyle = C.ground; ctx.fill(); ctx.shadowBlur = 16 * glow; ctx.fill(); ctx.restore(); }
                 ctx.save(); rr(ctx, x + 5, y + 5, cw - 10, ch - 10, 5); ctx.clip();
                 const k2 = Math.max((cw - 10) / img.width, (ch - 10) / img.height);
                 ctx.drawImage(img, x + 5 + ((cw - 10) - img.width * k2) / 2, y + 5 + ((ch - 10) - img.height * k2) / 2, img.width * k2, img.height * k2);
                 ctx.restore();
-                rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = (drag && drag.c === card) ? C.ink : C.gold; ctx.lineWidth = 2; ctx.stroke();
+                rr(ctx, x, y, cw, ch, 8); ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.stroke();
+                ctx.restore();
             }
+        }
+
+        // Auswahlrahmen mit Griffen (nur Vorschau)
+        const HANDLE = 9, ROT_OFF = 38;
+        const cardCenter = (c) => ({ x: c.x + c.w / 2, y: c.y + c.h / 2 });
+        const toLocal = (c, p) => { const m = cardCenter(c), r = -(c.rot || 0) * Math.PI / 180, dx = p.x - m.x, dy = p.y - m.y; return { x: dx * Math.cos(r) - dy * Math.sin(r), y: dx * Math.sin(r) + dy * Math.cos(r) }; };
+        const corners = (c) => [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => ({ x: sx * (c.w / 2 + 6), y: sy * (c.h / 2 + 6) }));
+        const handleAt = (c, p) => {
+            const l = toLocal(c, p);
+            if (Math.hypot(l.x, l.y - (-c.h / 2 - ROT_OFF)) <= HANDLE + 6) return 'rot';
+            if (corners(c).some((k) => Math.abs(l.x - k.x) <= HANDLE + 5 && Math.abs(l.y - k.y) <= HANDLE + 5)) return 'scale';
+            return null;
+        };
+        function drawSelection(c) {
+            const m = cardCenter(c);
+            ctx.save(); ctx.translate(m.x, m.y); ctx.rotate((c.rot || 0) * Math.PI / 180);
+            ctx.setLineDash([7, 5]); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+            ctx.strokeRect(-c.w / 2 - 6, -c.h / 2 - 6, c.w + 12, c.h + 12); ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(0, -c.h / 2 - 6); ctx.lineTo(0, -c.h / 2 - ROT_OFF); ctx.stroke();
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = C.ground; ctx.lineWidth = 2;
+            for (const k of corners(c)) { ctx.fillRect(k.x - HANDLE / 2 - 1, k.y - HANDLE / 2 - 1, HANDLE + 2, HANDLE + 2); ctx.strokeRect(k.x - HANDLE / 2 - 1, k.y - HANDLE / 2 - 1, HANDLE + 2, HANDLE + 2); }
+            ctx.beginPath(); ctx.arc(0, -c.h / 2 - ROT_OFF, HANDLE, 0, Math.PI * 2); ctx.fillStyle = C.gold; ctx.fill(); ctx.stroke();
+            if (drag && drag.type === 'rot') {
+                ctx.rotate(-(c.rot || 0) * Math.PI / 180);
+                const t = Math.round(c.rot || 0) + '°'; ctx.font = '600 16px system-ui, sans-serif'; ctx.textAlign = 'center';
+                ctx.fillStyle = 'rgba(0,0,0,0.75)'; rr(ctx, -28, -c.h / 2 - ROT_OFF - 50, 56, 26, 6); ctx.fill();
+                ctx.fillStyle = '#fff'; ctx.fillText(t, 0, -c.h / 2 - ROT_OFF - 31); ctx.textAlign = 'left';
+            }
+            ctx.restore();
         }
 
         // Vorschau-Ebenen (Mini, Safe Area, Auswahl, Hilfslinien)
@@ -439,6 +490,7 @@
             mini.clearRect(0, 0, 246, 138); mini.drawImage(out, 0, 0, 246, 138);
             if (!exporting && $('safe').checked) drawSafe();
             if (!exporting && arrows[sel]) outlineArrow(arrows[sel]);
+            if (!exporting && selCard && cards.includes(selCard)) drawSelection(selCard);
             if (drag && (guides.v || guides.h)) {
                 ctx.save(); ctx.strokeStyle = '#f0c35a'; ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
                 if (guides.v) { ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke(); }
@@ -462,8 +514,7 @@
             ctx.save(); rr(ctx, sx, sy, sw, sh, 14); ctx.clip();
             ctx.fillStyle = '#1c1610'; ctx.fillRect(sx, sy, sw, sh);
             if (scene) {
-                const s = Math.max(sw / scene.width, sh / scene.height), w = scene.width * s, h = scene.height * s;
-                ctx.drawImage(scene, sx + (sw - w) / 2, sy + (sh - h) / 2, w, h);
+                drawScene(sx, sy, sw, sh);
             } else {
                 const g = ctx.createRadialGradient(W / 2, H * 0.4, 0, W / 2, H * 0.4, 420);
                 g.addColorStop(0, 'rgba(240,195,90,0.45)'); g.addColorStop(1, 'rgba(240,195,90,0)');
@@ -545,6 +596,7 @@
 
             // Auswahl (nur in der Vorschau)
             if (!exporting && arrows[sel]) outlineArrow(arrows[sel]);
+            if (!exporting && selCard && cards.includes(selCard)) drawSelection(selCard);
 
             // Ausrichtungslinien beim Ziehen
             if (drag && (guides.v || guides.h)) {
@@ -556,31 +608,37 @@
         }
 
         // ── Eingaben ──
-        $('scene').addEventListener('change', async (e) => { if (e.target.files[0]) { scene = await loadImg(e.target.files[0]); draw(); } });
+        $('scene').addEventListener('change', async (e) => { if (e.target.files[0]) { scene = await loadImg(e.target.files[0]); sceneOff = { x: 0, y: 0 }; $('szoom').value = 100; updateOutputs(); draw(); } });
+        $('szoom').addEventListener('input', draw);
         const layoutCards = () => {
             const cw = +$('csize').value, gap = 16, total = cards.length * cw + (cards.length - 1) * gap;
-            cards.forEach((c, i) => { c.x = (W - total) / 2 + i * (cw + gap); c.y = M + 18; });
+            cards.forEach((c, i) => { c.w = cw; c.h = Math.round(cw * 12 / 7); c.rot = 0; c.x = (W - total) / 2 + i * (cw + gap); c.y = M + 18; });
             out.classList.toggle('has-cards', cards.length > 0);
         };
         $('cards').addEventListener('change', async (e) => {
             const imgs = await Promise.all([...e.target.files].slice(0, 3).map(loadImg));
-            cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0 })); layoutCards(); draw();
+            cards = imgs.map((img) => ({ img, x: 0, y: 0, w: 0, h: 0, rot: 0 })); selCard = null; layoutCards(); draw();
         });
-        $('csize').addEventListener('input', draw);
-        $('cardsReset').addEventListener('click', () => { layoutCards(); textOff = { x: 0, y: 0 }; pPos = null; $('psize').value = 100; $('tsize').value = 70; updateOutputs(); draw(); });
+        // Regler setzt die Größe aller Karten (Mitte bleibt stehen)
+        $('csize').addEventListener('input', () => { const w = +$('csize').value; cards.forEach((c) => { const m = cardCenter(c); c.w = w; c.h = Math.round(w * 12 / 7); c.x = m.x - c.w / 2; c.y = m.y - c.h / 2; }); draw(); });
+        $('cglow').addEventListener('input', draw);
+        $('cardsReset').addEventListener('click', () => { layoutCards(); selCard = null; textOff = { x: 0, y: 0 }; pPos = null; $('psize').value = 100; $('tsize').value = 70; updateOutputs(); draw(); });
 
         // Drag and Drop in der Vorschau
         const toCanvas = (e) => { const r = out.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
         const inText = (p) => !!textBox && p.x >= textBox.x && p.x <= textBox.x + textBox.w && p.y >= textBox.y && p.y <= textBox.y + textBox.h;
         const inPerson = (p) => !!pBox && p.x >= pBox.x && p.x <= pBox.x + pBox.w && p.y >= pBox.y && p.y <= pBox.y + pBox.h;
-        const hit = (p) => { for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i]; if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h) return i; } return -1; };
+        const hit = (p) => { for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i], l = toLocal(c, p); if (Math.abs(l.x) <= c.w / 2 && Math.abs(l.y) <= c.h / 2) return i; } return -1; };
         out.addEventListener('pointerdown', (e) => {
             const p = toCanvas(e), ai = hitArrow(p), i = hit(p);
-            if (ai >= 0) { const a = arrows.splice(ai, 1)[0]; arrows.push(a); sel = arrows.length - 1; syncArrowUI(); drag = { type: 'arrow', a, dx: p.x - a.x, dy: p.y - a.y }; }
-            else if (i >= 0) { const c = cards.splice(i, 1)[0]; cards.push(c); drag = { type: 'card', c, dx: p.x - c.x, dy: p.y - c.y }; }
-            else if (inText(p)) { drag = { type: 'text', dx: p.x - textOff.x, dy: p.y - textOff.y }; }
-            else if (inPerson(p)) { drag = { type: 'person', dx: p.x - pPos.x, dy: p.y - pPos.y }; }
-            else { if (sel >= 0) { sel = -1; syncArrowUI(); draw(); } return; }
+            const hd = selCard && cards.includes(selCard) ? handleAt(selCard, p) : null;
+            if (hd === 'rot') { drag = { type: 'rot', c: selCard }; }
+            else if (hd === 'scale') { const m = cardCenter(selCard); drag = { type: 'scale', c: selCard, d0: Math.hypot(p.x - m.x, p.y - m.y), w0: selCard.w }; }
+            else if (ai >= 0) { selCard = null; const a = arrows.splice(ai, 1)[0]; arrows.push(a); sel = arrows.length - 1; syncArrowUI(); drag = { type: 'arrow', a, dx: p.x - a.x, dy: p.y - a.y }; }
+            else if (i >= 0) { const c = cards.splice(i, 1)[0]; cards.push(c); selCard = c; if (sel >= 0) { sel = -1; syncArrowUI(); } drag = { type: 'card', c, dx: p.x - c.x, dy: p.y - c.y }; }
+            else if (inText(p)) { selCard = null; drag = { type: 'text', dx: p.x - textOff.x, dy: p.y - textOff.y }; }
+            else if (inPerson(p)) { selCard = null; drag = { type: 'person', dx: p.x - pPos.x, dy: p.y - pPos.y }; }
+            else { if (sel >= 0) { sel = -1; syncArrowUI(); } if (selCard) selCard = null; if (!scene) { draw(); return; } drag = { type: 'scene', sx: p.x - sceneOff.x, sy: p.y - sceneOff.y }; }
             out.setPointerCapture(e.pointerId); out.style.cursor = 'grabbing'; e.preventDefault(); draw();
         });
         out.addEventListener('pointermove', (e) => {
@@ -591,6 +649,18 @@
                 guides.h = false;
                 if (textBox) { const cy = textBox.y + textBox.h / 2 + (ny - textOff.y); guides.h = Math.abs(cy - H / 2) < SNAP; if (guides.h) ny += Math.round(H / 2 - cy); }
                 textOff.x = nx; textOff.y = ny; draw();
+            } else if (drag && drag.type === 'scene') {
+                sceneOff.x = Math.round(p.x - drag.sx); sceneOff.y = Math.round(p.y - drag.sy); draw();
+            } else if (drag && drag.type === 'rot') {
+                const c = drag.c, m = cardCenter(c);
+                let ang = Math.atan2(p.y - m.y, p.x - m.x) * 180 / Math.PI + 90;
+                if (ang > 180) ang -= 360;
+                if (e.shiftKey) ang = Math.round(ang / 15) * 15; else if (Math.abs(ang) < 3) ang = 0;
+                c.rot = Math.round(ang); draw();
+            } else if (drag && drag.type === 'scale') {
+                const c = drag.c, m = cardCenter(c);
+                const w = Math.max(50, Math.min(520, Math.round(drag.w0 * Math.hypot(p.x - m.x, p.y - m.y) / drag.d0)));
+                c.w = w; c.h = Math.round(w * 12 / 7); c.x = m.x - c.w / 2; c.y = m.y - c.h / 2; draw();
             } else if (drag && drag.type === 'person') {
                 pPos.x = Math.round(p.x - drag.dx); pPos.y = Math.round(p.y - drag.dy); guides = { v: false, h: false }; draw();
             } else if (drag && drag.type === 'arrow') {
@@ -604,9 +674,13 @@
                 guides.h = Math.abs(ny + c.h / 2 - H / 2) < SNAP; if (guides.h) ny = Math.round(H / 2 - c.h / 2);
                 c.x = nx; c.y = ny; draw();
             }
-            else out.style.cursor = (hitArrow(p) >= 0 || hit(p) >= 0 || inText(p) || inPerson(p)) ? 'grab' : 'default';
+            else {
+                const hd = selCard && cards.includes(selCard) ? handleAt(selCard, p) : null;
+                out.style.cursor = hd === 'rot' ? 'crosshair' : hd === 'scale' ? 'nwse-resize' : (hitArrow(p) >= 0 || hit(p) >= 0 || inText(p) || inPerson(p)) ? 'grab' : 'default';
+            }
         });
         const endDrag = () => { if (drag) { drag = null; guides = { v: false, h: false }; out.style.cursor = 'default'; draw(); } };
+        out.addEventListener('dblclick', (e) => { const p = toCanvas(e); if (hit(p) < 0 && hitArrow(p) < 0 && !inText(p) && !inPerson(p) && scene) { sceneOff = { x: 0, y: 0 }; $('szoom').value = 100; updateOutputs(); draw(); } });
         out.addEventListener('pointerup', endDrag); out.addEventListener('pointercancel', endDrag);
         ['l1', 'l2', 'ep', 'dark', 'color2', 'tsize', 'psize', 'pglow'].forEach((id) => $(id).addEventListener('input', draw));
         document.querySelectorAll('input[name=layout]').forEach((r) => r.addEventListener('change', () => { try { localStorage.setItem('sdz-layout', r.value); } catch {} draw(); }));
@@ -623,6 +697,11 @@
         // Safe Area an/aus (Checkbox oder Taste S), Einstellung wird gemerkt
         try { $('safe').checked = localStorage.getItem('sdz-safe') === '1'; } catch {}
         $('safe').addEventListener('change', () => { try { localStorage.setItem('sdz-safe', $('safe').checked ? '1' : '0'); } catch {} draw(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.target.closest('input, textarea, select')) return;
+            if (selCard && (e.key === 'Delete' || e.key === 'Backspace')) { cards = cards.filter((c) => c !== selCard); selCard = null; e.preventDefault(); draw(); return; }
+            if (e.key === 'Escape' && selCard) { selCard = null; draw(); return; }
+        });
         document.addEventListener('keydown', (e) => {
             if (e.key.toLowerCase() !== 's' || e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select')) return;
             $('safe').checked = !$('safe').checked; $('safe').dispatchEvent(new Event('change'));
