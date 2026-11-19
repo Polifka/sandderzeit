@@ -351,6 +351,7 @@ main.content-section { padding: 160px 0 var(--space-8); }
 
 /* ─── Steinschleifer: Hero ─── */
 .hero__sub { margin-top: var(--space-4); font-style: italic; font-size: 26px; line-height: 1.35; color: var(--ink); }
+.hero__filter { display: block; margin-top: var(--space-2); font-style: normal; font-size: 17px; letter-spacing: .02em; color: var(--ink-muted); }
 .hero__points { list-style: none; margin-top: var(--space-5); }
 .hero__points li { position: relative; padding-left: 24px; margin-bottom: var(--space-2); font-size: 19px; color: var(--ink-muted); }
 .hero__points li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
