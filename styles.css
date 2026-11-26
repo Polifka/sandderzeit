@@ -786,75 +786,128 @@ main.content-section { padding: 160px 0 var(--space-8); }
 
 @media (max-width: 560px) {
   .hero--oracle {
-    padding-top: 88px;
-    padding-bottom: 100px;
+    padding-top: 84px;
+    padding-bottom: 104px;
+  }
+  .hero--oracle .hero__dunes {
+    height: 84px;
+  }
+  .hero--oracle .hero__eyebrow {
+    font-size: 11px;
+    letter-spacing: .24em;
+    margin-top: 0;
   }
   .hero--oracle .hero__title {
-    font-size: clamp(36px, 10vw, 48px);
+    font-size: clamp(36px, 10vw, 46px);
     margin-top: var(--space-3);
   }
   .hero--oracle .hero__lead {
     margin-top: var(--space-3);
     font-size: 18px;
     line-height: 1.45;
+    max-width: 32ch;
   }
   .hero--oracle .oracle-cue {
     margin-top: var(--space-4);
     font-size: 11px;
-    letter-spacing: .18em;
+    letter-spacing: .16em;
+    line-height: 1.4;
+  }
+  .oracle-stage {
+    padding: 4px 0 0;
   }
   .oracle-deck {
-    height: 225px;
-    max-width: 320px;
+    height: 200px;
+    max-width: 340px;
+    transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .oracle-stage.is-revealed .oracle-deck {
+    height: 224px;
   }
   .flip-card {
-    width: 104px;
+    width: 96px;
   }
-  .flip-card[data-slot="0"] { --tx: -64px; --ty: 12px; --rot: -15deg; }
-  .flip-card[data-slot="1"] { --tx: -42px; --ty: 6px;  --rot: -10deg; }
-  .flip-card[data-slot="2"] { --tx: -21px; --ty: 2px;  --rot: -5deg; }
+  .flip-card[data-slot="0"] { --tx: -78px; --ty: 14px; --rot: -18deg; }
+  .flip-card[data-slot="1"] { --tx: -52px; --ty: 7px;  --rot: -12deg; }
+  .flip-card[data-slot="2"] { --tx: -26px; --ty: 2px;  --rot: -6deg; }
   .flip-card[data-slot="3"] { --tx: 0px;   --ty: 0px;  --rot: 0deg; }
-  .flip-card[data-slot="4"] { --tx: 21px;  --ty: 2px;  --rot: 5deg; }
-  .flip-card[data-slot="5"] { --tx: 42px;  --ty: 6px;  --rot: 10deg; }
-  .flip-card[data-slot="6"] { --tx: 64px;  --ty: 12px; --rot: 15deg; }
+  .flip-card[data-slot="4"] { --tx: 26px;  --ty: 2px;  --rot: 6deg; }
+  .flip-card[data-slot="5"] { --tx: 52px;  --ty: 7px;  --rot: 12deg; }
+  .flip-card[data-slot="6"] { --tx: 78px;  --ty: 14px; --rot: 18deg; }
   .card--deck {
-    padding: 5px;
+    padding: 4px;
     border-radius: 7px;
   }
   .card--deck .card__frame {
     padding: 6px 4px;
   }
   .card--deck .card__numeral {
-    font-size: 11px;
+    font-size: 10px;
   }
   .card--deck .card__name {
-    font-size: 8px;
-    letter-spacing: .1em;
+    font-size: 7.5px;
+    letter-spacing: .08em;
     padding-top: 4px;
   }
   .oracle-deck.has-selected .flip-card.is-flipped {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1.32);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1.24);
+  }
+  .oracle-stage__hint {
+    margin-top: 10px;
+    font-size: 10px;
+    letter-spacing: .2em;
   }
   .oracle-result__eyebrow {
     font-size: 11px;
-    letter-spacing: .2em;
+    letter-spacing: .18em;
+    text-align: center;
   }
   .oracle-result__hook {
-    font-size: 26px;
+    font-size: 25px;
+    line-height: 1.24;
+    text-align: center;
   }
-  .oracle-result__text,
+  .oracle-result__text {
+    font-size: 17px;
+    line-height: 1.55;
+  }
   .oracle-result__question {
     font-size: 17px;
+    line-height: 1.45;
+  }
+  .oracle-result__actions {
+    margin-top: var(--space-5);
+  }
+  .oracle-result__actions .btn {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 12px;
+    letter-spacing: .16em;
+    line-height: 1.35;
+    text-align: center;
+  }
+  .oracle-optin__title {
+    font-size: 26px;
+    line-height: 1.18;
+    text-align: center;
   }
   .oracle-cta__lead {
     font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
   }
   .oracle-form .nl-form__input {
     font-size: 16px;
+    text-align: center;
+  }
+  .oracle-form .nl-form__btn {
+    font-size: 12px;
+    letter-spacing: .18em;
   }
   .oracle-cta__footer {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
     gap: var(--space-2);
   }
 }
