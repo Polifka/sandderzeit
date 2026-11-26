@@ -38,27 +38,212 @@
     </header>
 
     <main>
-        <!-- 0 · HERO -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero__text">
-                    <h1 class="hero__title">Erforsche die <em>Mysterien der Zeit</em></h1>
-                    <p class="hero__lead">Fühlst du dich festgefahren? Die Karten sagen dir nicht, was passiert. Sie zeigen dir, was du schon ahnst.</p>
-                    <div class="hero__ctas">
-                        <a href="#tarot" class="btn btn-primary">Reading buchen</a>
-                        <a href="#podcast" class="btn">Podcast hören</a>
+        <!-- 0 · HERO / ORAKEL-FUNNEL -->
+        <section class="hero hero--oracle" id="orakel">
+            <div class="container hero__container">
+                <!-- Text / Status Spalte -->
+                <div class="hero__text" id="oracle-text-col">
+                    <div class="oracle-intro is-visible" id="oracle-intro">
+                        <p class="hero__eyebrow">Sand der Zeit · Tarot &amp; Alchemie</p>
+                        <h1 class="hero__title">Schleif deinen <em>Stein.</em></h1>
+                        <p class="hero__lead">Fühlst du dich festgefahren? Die Karten sagen dir nicht, was passiert. Sie zeigen dir, was du schon ahnst.</p>
+                        <p class="oracle-cue">
+                            <span class="oracle-cue__line" aria-hidden="true"></span>
+                            <span class="oracle-cue__star" aria-hidden="true">✦</span>
+                            <span>Wähle intuitiv eine Karte aus dem Fächer</span>
+                        </p>
                     </div>
-                </div>
-                <div class="hero__spread" aria-hidden="true">
-                    <div class="card card--scan"><img src="images/web/der-magier.webp" alt="" width="418" height="720"></div>
-                    <div class="card card--glow">
-                        <div class="card__frame">
-                            <span class="card__numeral">0</span>
-                            <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600"></div>
-                            <span class="card__name">Sand der Zeit</span>
+
+                    <!-- Ergebnis-Ansicht (weich eingeblendet nach Ziehung) -->
+                    <div class="oracle-result" id="oracle-result" hidden>
+                        <p class="oracle-result__eyebrow" id="oracle-card-meta">I · DER MAGIER · SCHÖPFERKRAFT &amp; UMSETZUNG</p>
+                        <h2 class="oracle-result__hook" id="oracle-card-hook">Dein Werkzeugkasten ist voll, aber deine Kraft verstreut sich.</h2>
+                        <p class="oracle-result__text" id="oracle-card-text">Du trägst enorme Schöpferkraft in dir. Doch oft verpufft die Energie in tausend Ideen, bevor der erste echte Stein gesetzt ist. Dein Geist weiß alles – jetzt braucht es Erdung und Meisterschaft.</p>
+                        <p class="oracle-result__question" id="oracle-card-impuls">An welchem einen Projekt musst du jetzt aufhören nachzudenken und anfangen zu schleifen?</p>
+
+                        <div class="oracle-divider" aria-hidden="true"></div>
+
+                        <div class="oracle-cta">
+                            <p class="oracle-cta__lead">
+                                <strong>Tiefendeutung &amp; 1 konkrete Übung für deine Woche</strong> schicken wir dir kostenlos per Mail – zusammen mit deinem unverbindlichen Platz auf der Warteliste für <a href="/steinschleifer/">Die Steinschleifer</a> (unseren Zirkel für angewandtes Tarot &amp; echte Arbeit an dir).
+                            </p>
+
+                            <form class="nl-form hero__form oracle-form" id="oracle-form" action="/newsletter.php" method="post" novalidate>
+                                <input type="hidden" name="list" value="steinschleifer">
+                                <input type="hidden" name="card" id="oracle-card-input" value="">
+                                <div class="nl-form__row">
+                                    <label class="sr-only" for="oracle-email">Deine E-Mail-Adresse</label>
+                                    <input class="nl-form__input" id="oracle-email" type="email" name="email" placeholder="deine@email.de" autocomplete="email" required maxlength="255">
+                                    <button class="btn btn-primary nl-form__btn" type="submit">Deutung &amp; Übung sichern</button>
+                                </div>
+                                <input class="nl-form__hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+                                <label class="nl-form__consent">
+                                    <input type="checkbox" name="consent" value="1" required>
+                                    <span>Ich möchte meine Kartendeutung sowie Infos zum Start der Steinschleifer per Mail erhalten (kostenlos &amp; jederzeit abmeldbar). <a href="/datenschutz.html">Datenschutz</a></span>
+                                </label>
+                                <p class="nl-form__msg" role="status" aria-live="polite"></p>
+                            </form>
+
+                            <div class="oracle-cta__footer">
+                                <p class="hero__offer">Kostenlose Warteliste · zum Start <strong>33 € statt 55 €</strong>/Monat (10 Gründungsplätze)</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="card card--scan"><img src="images/web/die-welt.webp" alt="" width="418" height="720"></div>
+                </div>
+
+                <!-- 7 Interaktive Orakel-Karten (Fächer mit 3D Flip) -->
+                <div class="oracle-stage" id="oracle-stage">
+                    <div class="oracle-aura" aria-hidden="true"></div>
+                    <p class="oracle-mobile-hint">✦ Tippe auf eine Karte ✦</p>
+                    <div class="oracle-deck" id="oracle-deck" aria-label="7 verdeckte Tarotkarten">
+                        <div class="flip-card" data-slot="0" data-card="der-magier" role="button" tabindex="0" aria-label="Karte 1 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/der-magier.webp" alt="Der Magier" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card" data-slot="1" data-card="acht-der-muenzen" role="button" tabindex="0" aria-label="Karte 2 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/acht-der-muenzen.webp" alt="Acht der Münzen" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card" data-slot="2" data-card="der-turm" role="button" tabindex="0" aria-label="Karte 3 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/der-turm.webp" alt="Der Turm" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card" data-slot="3" data-card="as-der-schwerter" role="button" tabindex="0" aria-label="Karte 4 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/as-der-schwerter.webp" alt="As der Schwerter" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card" data-slot="4" data-card="die-liebenden" role="button" tabindex="0" aria-label="Karte 5 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/die-liebenden.webp" alt="Die Liebenden" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card" data-slot="5" data-card="drei-der-staebe" role="button" tabindex="0" aria-label="Karte 6 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/drei-der-staebe.webp" alt="Drei der Stäbe" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card" data-slot="6" data-card="die-welt" role="button" tabindex="0" aria-label="Karte 7 ziehen">
+                            <div class="flip-card__lift">
+                                <div class="flip-card__inner">
+                                    <div class="flip-card__face flip-card__back">
+                                        <div class="card card--deck">
+                                            <div class="card__frame">
+                                                <span class="card__numeral">✦</span>
+                                                <div class="card__art"><img src="images/web/logo-card.webp" alt="" width="350" height="600" loading="eager"></div>
+                                                <span class="card__name">Sand der Zeit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card__face flip-card__front">
+                                        <div class="card card--scan card--revealed">
+                                            <img src="images/web/die-welt.webp" alt="Die Welt" width="418" height="720" loading="eager">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="oracle-stage__hint" aria-hidden="true">Deine Karte für heute</p>
                 </div>
             </div>
             <svg class="hero__dunes" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true">

@@ -383,3 +383,462 @@ main.content-section { padding: 160px 0 var(--space-8); }
 .countdown-big b { display: block; margin-bottom: var(--space-2); font-family: var(--font-serif); font-weight: 500; font-size: 56px; letter-spacing: 0; text-transform: none; color: var(--ink); }
 .hosts { justify-content: center; margin-top: var(--space-6); }
 .newsletter .hosts p { margin-top: 0; text-align: left; }
+
+/* ─── Orakel-Funnel (Hero · Editorial & Butter-Smooth) ─── */
+.hero--oracle {
+  min-height: 100vh;
+  padding-top: 120px;
+  padding-bottom: 160px;
+}
+.hero--oracle .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Intro-Hinweis: minimalistisch im Sand-der-Zeit-Stil */
+.oracle-intro {
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.oracle-intro.is-leaving {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.oracle-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.oracle-cue__line {
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.55;
+}
+.oracle-cue__star {
+  font-size: 14px;
+  animation: oracleBreathe 2.8s infinite ease-in-out;
+}
+@keyframes oracleBreathe {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Ergebnis-Ansicht: edle Typografie statt verschachtelter Boxen */
+.oracle-result {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.oracle-result.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.oracle-result__eyebrow {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.oracle-result__hook {
+  margin-top: var(--space-3);
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 3.2vw, 38px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.oracle-result__text {
+  margin-top: var(--space-4);
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  max-width: 50ch;
+}
+.oracle-result__question {
+  margin-top: var(--space-4);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--gold);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.45;
+  color: var(--ink);
+  max-width: 48ch;
+}
+.oracle-divider {
+  margin: var(--space-5) 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line-strong) 0%, var(--line) 45%, transparent 100%);
+  opacity: 0.7;
+}
+.oracle-cta__lead {
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+  max-width: 48ch;
+}
+.oracle-cta__lead strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.oracle-form {
+  margin-top: var(--space-4);
+}
+.oracle-cta__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-4);
+}
+.oracle-cta__footer .hero__offer {
+  margin-top: 0;
+  font-size: 15px;
+}
+.oracle-reset-btn {
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  transition: color 0.25s var(--ease);
+}
+.oracle-reset-btn:hover {
+  color: var(--gold);
+}
+
+/* ─── 3D-Kartenfächer & Flip (Zero-Jitter, 60fps GPU) ─── */
+.oracle-stage {
+  flex: 1 1 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  position: relative;
+}
+/* Sanfte goldene Aura hinter dem Fächer / der gezogenen Karte */
+.oracle-aura {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 195, 90, 0.2) 0%, rgba(214, 164, 65, 0.06) 45%, transparent 72%);
+  pointer-events: none;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
+  opacity: 0.7;
+}
+.oracle-stage.is-revealed .oracle-aura {
+  transform: scale(1.25);
+  opacity: 1;
+}
+.oracle-mobile-hint {
+  display: none;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-4);
+}
+
+.oracle-deck {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 410px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Äußerer Slot: hält die Fächer-Position stabil (kein Hover-Springen!) */
+.flip-card {
+  position: absolute;
+  width: 186px;
+  aspect-ratio: 7 / 12;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  perspective: 1100px;
+  transform-origin: center 115%;
+  will-change: transform, opacity;
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) rotate(var(--rot, 0deg));
+  z-index: var(--z, 10);
+  transition:
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Fächer-Geometrie (sanfter Bogen) */
+.flip-card[data-slot="0"] { --tx: -120px; --ty: 22px; --rot: -18deg; --z: 10; }
+.flip-card[data-slot="1"] { --tx: -80px;  --ty: 10px; --rot: -12deg; --z: 11; }
+.flip-card[data-slot="2"] { --tx: -40px;  --ty: 3px;  --rot: -6deg;  --z: 12; }
+.flip-card[data-slot="3"] { --tx: 0px;    --ty: 0px;  --rot: 0deg;   --z: 13; }
+.flip-card[data-slot="4"] { --tx: 40px;   --ty: 3px;  --rot: 6deg;   --z: 14; }
+.flip-card[data-slot="5"] { --tx: 80px;   --ty: 10px; --rot: 12deg;  --z: 15; }
+.flip-card[data-slot="6"] { --tx: 120px;  --ty: 22px; --rot: 18deg;  --z: 16; }
+
+/* Innerer Lift-Layer: hebt die Karte beim Hover entlang ihrer eigenen Achse an */
+.flip-card__lift {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.flip-card:hover:not(.is-flipped) {
+  z-index: 30;
+}
+@media (hover: hover) {
+  .flip-card:hover:not(.is-flipped) .flip-card__lift {
+    transform: translate3d(0, -24px, 0) scale(1.04);
+  }
+  .flip-card:hover:not(.is-flipped) .card--deck {
+    border-color: var(--gold-glow);
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.7), 0 0 28px rgba(240, 195, 90, 0.32);
+  }
+}
+.flip-card:focus-visible .card--deck {
+  outline: 2px solid var(--gold-glow);
+  outline-offset: 4px;
+}
+
+/* 3D-Flip-Layer */
+.flip-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.flip-card.is-flipped .flip-card__inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-card);
+}
+.flip-card__back {
+  transform: rotateY(0deg);
+}
+.flip-card__front {
+  transform: rotateY(180deg);
+}
+
+.card--deck {
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.62);
+  transition: border-color 0.3s ease, box-shadow 0.35s ease;
+}
+.card--revealed {
+  width: 100%;
+  height: 100%;
+  border-color: var(--gold-glow);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.8), 0 0 42px rgba(240, 195, 90, 0.3);
+}
+
+/* Zustand nach Ziehung: übrige Karten gleiten elegant weg, gezogene Karte schwebt im Zentrum */
+.oracle-deck.has-selected .flip-card:not(.is-flipped) {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--tx, 0px) * 1.45), calc(var(--ty, 0px) + 32px), 0) rotate(var(--rot, 0deg)) scale(0.9);
+}
+.oracle-deck.has-selected .flip-card.is-flipped {
+  transform: translate3d(0, -6px, 0) rotate(0deg) scale(1.22);
+  z-index: 40;
+  cursor: default;
+}
+.oracle-deck.has-selected .flip-card.is-flipped .flip-card__lift {
+  transform: none;
+}
+
+/* Dezenter Hinweis unter der aufgedeckten Karte */
+.oracle-stage__hint {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s ease 0.35s, transform 0.45s ease 0.35s;
+  pointer-events: none;
+}
+.oracle-stage.is-revealed .oracle-stage__hint {
+  opacity: 0.75;
+  transform: translateY(0);
+}
+
+/* Responsive Anpassungen (Tablet & Mobile) */
+@media (max-width: 960px) {
+  .hero--oracle {
+    min-height: auto;
+    padding-top: 96px;
+    padding-bottom: 120px;
+  }
+  .hero--oracle .container {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  /* Nach Ziehung: gezogene Karte oben, Deutung & Formular direkt darunter */
+  .hero--oracle.is-revealed .oracle-stage {
+    order: -1;
+  }
+  .hero--oracle .hero__text {
+    flex: none;
+    width: 100%;
+    text-align: center;
+  }
+  .hero--oracle .hero__lead {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 20px;
+  }
+  .hero--oracle .oracle-cue {
+    justify-content: center;
+  }
+  .hero--oracle .oracle-cue__line {
+    display: none;
+  }
+  .hero--oracle .oracle-result {
+    text-align: left;
+  }
+  .oracle-stage {
+    flex: none;
+    width: 100%;
+    padding: 8px 0 4px;
+  }
+  .oracle-aura {
+    width: 260px;
+    height: 260px;
+  }
+  .oracle-deck {
+    height: 260px;
+    max-width: 360px;
+  }
+  .flip-card {
+    width: 132px;
+  }
+  .flip-card[data-slot="0"] { --tx: -84px; --ty: 16px; --rot: -16deg; }
+  .flip-card[data-slot="1"] { --tx: -56px; --ty: 8px;  --rot: -11deg; }
+  .flip-card[data-slot="2"] { --tx: -28px; --ty: 2px;  --rot: -5deg; }
+  .flip-card[data-slot="3"] { --tx: 0px;   --ty: 0px;  --rot: 0deg; }
+  .flip-card[data-slot="4"] { --tx: 28px;  --ty: 2px;  --rot: 5deg; }
+  .flip-card[data-slot="5"] { --tx: 56px;  --ty: 8px;  --rot: 11deg; }
+  .flip-card[data-slot="6"] { --tx: 84px;  --ty: 16px; --rot: 16deg; }
+  .oracle-mobile-hint {
+    display: none;
+  }
+  .oracle-deck.has-selected .flip-card.is-flipped {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1.16);
+  }
+}
+
+@media (max-width: 560px) {
+  .hero--oracle {
+    padding-top: 88px;
+    padding-bottom: 100px;
+  }
+  .hero--oracle .hero__title {
+    font-size: clamp(36px, 10vw, 48px);
+    margin-top: var(--space-3);
+  }
+  .hero--oracle .hero__lead {
+    margin-top: var(--space-3);
+    font-size: 18px;
+    line-height: 1.45;
+  }
+  .hero--oracle .oracle-cue {
+    margin-top: var(--space-4);
+    font-size: 11px;
+    letter-spacing: .18em;
+  }
+  .oracle-deck {
+    height: 225px;
+    max-width: 320px;
+  }
+  .flip-card {
+    width: 104px;
+  }
+  .flip-card[data-slot="0"] { --tx: -64px; --ty: 12px; --rot: -15deg; }
+  .flip-card[data-slot="1"] { --tx: -42px; --ty: 6px;  --rot: -10deg; }
+  .flip-card[data-slot="2"] { --tx: -21px; --ty: 2px;  --rot: -5deg; }
+  .flip-card[data-slot="3"] { --tx: 0px;   --ty: 0px;  --rot: 0deg; }
+  .flip-card[data-slot="4"] { --tx: 21px;  --ty: 2px;  --rot: 5deg; }
+  .flip-card[data-slot="5"] { --tx: 42px;  --ty: 6px;  --rot: 10deg; }
+  .flip-card[data-slot="6"] { --tx: 64px;  --ty: 12px; --rot: 15deg; }
+  .card--deck {
+    padding: 5px;
+    border-radius: 7px;
+  }
+  .card--deck .card__frame {
+    padding: 6px 4px;
+  }
+  .card--deck .card__numeral {
+    font-size: 11px;
+  }
+  .card--deck .card__name {
+    font-size: 8px;
+    letter-spacing: .1em;
+    padding-top: 4px;
+  }
+  .oracle-deck.has-selected .flip-card.is-flipped {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1.32);
+  }
+  .oracle-result__eyebrow {
+    font-size: 11px;
+    letter-spacing: .2em;
+  }
+  .oracle-result__hook {
+    font-size: 26px;
+  }
+  .oracle-result__text,
+  .oracle-result__question {
+    font-size: 17px;
+  }
+  .oracle-cta__lead {
+    font-size: 16px;
+  }
+  .oracle-form .nl-form__input {
+    font-size: 16px;
+  }
+  .oracle-cta__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-card, .flip-card__lift, .flip-card__inner, .oracle-intro, .oracle-result {
+    transition-duration: 0.01ms !important;
+  }
+}
+

@@ -28,6 +28,24 @@ jobs:
       - name: 🔨 Produktions-Build erstellen
         run: npm run build
 
+      - name: ✉️ Mailjet-Konfiguration aus GitHub Secrets erzeugen
+        if: ${{ secrets.MAILJET_API_KEY != '' && secrets.MAILJET_API_SECRET != '' }}
+        env:
+          MJ_KEY: ${{ secrets.MAILJET_API_KEY }}
+          MJ_SECRET: ${{ secrets.MAILJET_API_SECRET }}
+        run: |
+          cat <<EOF > dist/mailjet-config.php
+          <?php
+          return [
+              'api_key'    => '${MJ_KEY}',
+              'api_secret' => '${MJ_SECRET}',
+              'from_email' => 'info@sandderzeit.de',
+              'from_name'  => 'Filip & Jan · Sand der Zeit',
+              'list_id'    => 10648702,
+              'site_url'   => 'https://sandderzeit.de',
+          ];
+          EOF
+
       - name: 🚀 Per FTP zu ALL-INKL deployen
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
