@@ -54,39 +54,46 @@
                         </p>
                     </div>
 
-                    <!-- Ergebnis-Ansicht (weich eingeblendet nach Ziehung) -->
+                    <!-- Schritt 2: Kurzdeutung (ohne Formular, die Karte wirkt) -->
                     <div class="oracle-result" id="oracle-result" hidden>
                         <p class="oracle-result__eyebrow" id="oracle-card-meta">I · DER MAGIER · SCHÖPFERKRAFT &amp; UMSETZUNG</p>
                         <h2 class="oracle-result__hook" id="oracle-card-hook">Dein Werkzeugkasten ist voll, aber deine Kraft verstreut sich.</h2>
                         <p class="oracle-result__text" id="oracle-card-text">Du trägst enorme Schöpferkraft in dir. Doch oft verpufft die Energie in tausend Ideen, bevor der erste echte Stein gesetzt ist. Dein Geist weiß alles – jetzt braucht es Erdung und Meisterschaft.</p>
                         <p class="oracle-result__question" id="oracle-card-impuls">An welchem einen Projekt musst du jetzt aufhören nachzudenken und anfangen zu schleifen?</p>
+                        <div class="oracle-result__actions">
+                            <button type="button" class="btn btn-primary" id="oracle-next-btn">Tiefendeutung &amp; Übung erhalten &rarr;</button>
+                        </div>
+                    </div>
 
-                        <div class="oracle-divider" aria-hidden="true"></div>
+                    <!-- Schritt 3: Fokussiertes E-Mail-Formular -->
+                    <div class="oracle-optin" id="oracle-optin" hidden>
+                        <p class="oracle-result__eyebrow" id="oracle-optin-eyebrow">Deine Karte · Der Magier</p>
+                        <h2 class="oracle-optin__title">Wohin dürfen wir deine Deutung schicken?</h2>
+                        <p class="oracle-cta__lead">
+                            Du bekommst die <strong>Tiefendeutung + 1 konkrete Übung für deine Woche</strong> kostenlos per Mail – und stehst unverbindlich auf der Warteliste für <a href="/steinschleifer/">Die Steinschleifer</a>.
+                        </p>
 
-                        <div class="oracle-cta">
-                            <p class="oracle-cta__lead">
-                                <strong>Tiefendeutung &amp; 1 konkrete Übung für deine Woche</strong> schicken wir dir kostenlos per Mail – zusammen mit deinem unverbindlichen Platz auf der Warteliste für <a href="/steinschleifer/">Die Steinschleifer</a> (unseren Zirkel für angewandtes Tarot &amp; echte Arbeit an dir).
-                            </p>
-
-                            <form class="nl-form hero__form oracle-form" id="oracle-form" action="/newsletter.php" method="post" novalidate>
-                                <input type="hidden" name="list" value="steinschleifer">
-                                <input type="hidden" name="card" id="oracle-card-input" value="">
-                                <div class="nl-form__row">
-                                    <label class="sr-only" for="oracle-email">Deine E-Mail-Adresse</label>
-                                    <input class="nl-form__input" id="oracle-email" type="email" name="email" placeholder="deine@email.de" autocomplete="email" required maxlength="255">
-                                    <button class="btn btn-primary nl-form__btn" type="submit">Deutung &amp; Übung sichern</button>
-                                </div>
-                                <input class="nl-form__hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-                                <label class="nl-form__consent">
-                                    <input type="checkbox" name="consent" value="1" required>
-                                    <span>Ich möchte meine Kartendeutung sowie Infos zum Start der Steinschleifer per Mail erhalten (kostenlos &amp; jederzeit abmeldbar). <a href="/datenschutz.html">Datenschutz</a></span>
-                                </label>
-                                <p class="nl-form__msg" role="status" aria-live="polite"></p>
-                            </form>
-
-                            <div class="oracle-cta__footer">
-                                <p class="hero__offer">Kostenlose Warteliste · zum Start <strong>33 € statt 55 €</strong>/Monat (10 Gründungsplätze)</p>
+                        <form class="nl-form hero__form oracle-form" id="oracle-form" action="/newsletter.php" method="post" novalidate>
+                            <input type="hidden" name="list" value="steinschleifer">
+                            <input type="hidden" name="card" id="oracle-card-input" value="">
+                            <div class="nl-form__row">
+                                <label class="sr-only" for="oracle-email">Deine E-Mail-Adresse</label>
+                                <input class="nl-form__input" id="oracle-email" type="email" name="email" placeholder="deine@email.de" autocomplete="email" required maxlength="255">
+                                <button class="btn btn-primary nl-form__btn" type="submit">Jetzt senden</button>
                             </div>
+                            <input class="nl-form__hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+                            <label class="nl-form__consent">
+                                <input type="checkbox" name="consent" value="1" required>
+                                <span>Ich möchte meine Kartendeutung sowie Infos zum Start der Steinschleifer per Mail erhalten (kostenlos &amp; jederzeit abmeldbar). <a href="/datenschutz.html">Datenschutz</a></span>
+                            </label>
+                            <p class="nl-form__msg" role="status" aria-live="polite"></p>
+                        </form>
+
+                        <div class="oracle-cta__footer">
+                            <p class="hero__offer">Kostenlose Warteliste · zum Start <strong>33 € statt 55 €</strong>/Monat (10 Gründungsplätze)</p>
+                            <button type="button" class="oracle-reset-btn" id="oracle-back-btn">
+                                <span aria-hidden="true">&larr;</span> Zurück zur Deutung
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -209,6 +209,11 @@ function initOracle() {
   const cards = Array.from(deck.querySelectorAll('.flip-card'));
   const intro = document.getElementById('oracle-intro');
   const result = document.getElementById('oracle-result');
+  const optin = document.getElementById('oracle-optin');
+  const optinEyebrow = document.getElementById('oracle-optin-eyebrow');
+  const nextBtn = document.getElementById('oracle-next-btn');
+  const backBtn = document.getElementById('oracle-back-btn');
+  const emailInput = document.getElementById('oracle-email');
   const metaEl = document.getElementById('oracle-card-meta');
   const hookEl = document.getElementById('oracle-card-hook');
   const textEl = document.getElementById('oracle-card-text');
@@ -221,6 +226,37 @@ function initOracle() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
+
+  // Sanfter Wechsel zwischen zwei Text-Ansichten (Schritt 1 -> 2 -> 3)
+  function switchPane(fromEl, toEl, { instant = false, onShown = null } = {}) {
+    const showNext = () => {
+      if (fromEl) {
+        fromEl.hidden = true;
+        fromEl.classList.remove('is-leaving', 'is-visible');
+      }
+      if (toEl) {
+        toEl.hidden = false;
+        if (instant || reduceMotion) {
+          toEl.classList.add('is-visible');
+          if (onShown) onShown();
+        } else {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              toEl.classList.add('is-visible');
+              if (onShown) onShown();
+            });
+          });
+        }
+      }
+    };
+
+    if (!instant && fromEl && !fromEl.hidden && !reduceMotion) {
+      fromEl.classList.add('is-leaving');
+      setTimeout(showNext, 200);
+    } else {
+      showNext();
+    }
+  }
 
   // Zum Testen: ?reset=1 in der URL löscht die gespeicherte Tageskarte
   const params = new URLSearchParams(window.location.search);
@@ -257,8 +293,9 @@ function initOracle() {
     if (stage) stage.classList.add('is-revealed');
     if (oracleSection) oracleSection.classList.add('is-revealed');
 
-    // 2. Inhalte befüllen
+    // 2. Inhalte für Schritt 2 & Schritt 3 befüllen
     if (metaEl) metaEl.textContent = `${data.badge} · ${data.archetype}`;
+    if (optinEyebrow) optinEyebrow.textContent = `Deine Karte · ${data.badge}`;
     if (hookEl) hookEl.textContent = data.hook;
     if (textEl) textEl.textContent = data.text;
     if (impulsEl) impulsEl.textContent = data.impuls;
@@ -269,35 +306,31 @@ function initOracle() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ cardId, date: todayKey() }));
     } catch {}
 
-    // 4. Weicher Cross-Fade (oder sofort bei Wiederherstellung)
-    const showResult = () => {
-      if (intro) {
-        intro.hidden = true;
-        intro.classList.remove('is-leaving');
-      }
-      if (result) {
-        result.hidden = false;
-        if (instant || reduceMotion) {
-          result.classList.add('is-visible');
-        } else {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              result.classList.add('is-visible');
-            });
-          });
+    // 4. Schritt 1 -> Schritt 2 (Kurzdeutung)
+    switchPane(intro, result, {
+      instant,
+      onShown: () => {
+        if (!instant && window.innerWidth <= 960 && oracleSection) {
+          window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
         }
       }
-      if (!instant && window.innerWidth <= 960 && oracleSection) {
-        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-      }
-    };
+    });
+  }
 
-    if (!instant && intro && !reduceMotion) {
-      intro.classList.add('is-leaving');
-      setTimeout(showResult, 220);
-    } else {
-      showResult();
-    }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      switchPane(result, optin, {
+        onShown: () => {
+          if (emailInput && window.innerWidth > 960) emailInput.focus();
+        }
+      });
+    });
+  }
+
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      switchPane(optin, result);
+    });
   }
 
   function selectCard(cardEl) {

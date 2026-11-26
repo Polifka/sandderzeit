@@ -431,15 +431,37 @@ main.content-section { padding: 160px 0 var(--space-8); }
   50% { opacity: 1; transform: scale(1.15); }
 }
 
-/* Ergebnis-Ansicht: edle Typografie statt verschachtelter Boxen */
-.oracle-result {
+/* Ergebnis- & Opt-in-Ansichten (Schritt 2 & 3 · sanfter Cross-Fade) */
+.oracle-result,
+.oracle-optin {
   opacity: 0;
   transform: translateY(14px);
-  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.oracle-result.is-visible {
+.oracle-result.is-visible,
+.oracle-optin.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+.oracle-result.is-leaving,
+.oracle-optin.is-leaving {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.oracle-result__actions {
+  margin-top: var(--space-6);
+}
+.oracle-optin__title {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 3.6vw, 42px);
+  line-height: 1.12;
+  letter-spacing: .02em;
+  color: var(--ink);
+}
+.oracle-optin .oracle-cta__lead {
+  margin-top: var(--space-4);
 }
 .oracle-result__eyebrow {
   font-family: var(--font-display);
@@ -727,7 +749,8 @@ main.content-section { padding: 160px 0 var(--space-8); }
   .hero--oracle .oracle-cue__line {
     display: none;
   }
-  .hero--oracle .oracle-result {
+  .hero--oracle .oracle-result,
+  .hero--oracle .oracle-optin {
     text-align: left;
   }
   .oracle-stage {
