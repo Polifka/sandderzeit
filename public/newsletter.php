@@ -272,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['confirm'])) {
         $cardData = ($card !== '' && isset($CARDS[$card])) ? $CARDS[$card] : null;
         if ($cardData !== null) {
             $subject   = 'Deine Karte: ' . $cardData['name'] . ' – und deine Übung für diese Woche';
-            $preheader = 'Deine Tiefendeutung zu ' . $cardData['name'] . ', deine Wochenübung – und dein Platz auf der Warteliste.';
+            $preheader = 'Deine Deutung zu ' . $cardData['name'] . ', deine Wochenübung – und dein Platz auf der Warteliste.';
             $introHtml = '<tr><td class="pad" style="padding:28px 48px 0;font-family:\'Cormorant Garamond\',Georgia,serif;color:#f1e4c6;">'
                 . '<p style="margin:0 0 8px;font-family:\'Cinzel\',Georgia,serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#d6a441;text-align:center;">' . $cardData['eyebrow'] . '</p>'
                 . '<h1 class="h1" style="margin:0 0 24px;font-family:\'Cinzel\',Georgia,serif;font-weight:600;font-size:32px;line-height:1.2;color:#f1e4c6;text-align:center;">' . $cardData['headline'] . '</h1>'
@@ -328,7 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['confirm'])) {
 
     $cardLabel = ($card !== '' && isset($CARDS[$card])) ? $CARDS[$card]['name'] : '';
     $msgBody   = $cardLabel !== ''
-        ? 'Deine Anmeldung ist bestätigt. Deine persönliche Tiefendeutung zu <strong>' . htmlspecialchars($cardLabel, ENT_QUOTES, 'UTF-8') . '</strong> inklusive Wochenübung ist gerade in deinem Postfach gelandet – und du stehst auf der Warteliste für Die Steinschleifer.'
+        ? 'Deine Anmeldung ist bestätigt. Deine persönliche Deutung zu <strong>' . htmlspecialchars($cardLabel, ENT_QUOTES, 'UTF-8') . '</strong> inklusive Wochenübung ist gerade in deinem Postfach gelandet – und du stehst auf der Warteliste für Die Steinschleifer.'
         : 'Deine Anmeldung ist bestätigt. Schau in dein Postfach – deine Willkommensmail ist unterwegs und du stehst auf der Warteliste für Die Steinschleifer.';
 
     renderStatusPage(
@@ -389,12 +389,12 @@ $subject  = $cardName !== ''
     : 'Bitte bestätige kurz deine Anmeldung bei Sand der Zeit';
 
 $preheader = $cardName !== ''
-    ? 'Ein Klick genügt – dann schicken wir dir sofort deine Tiefendeutung zu ' . $cardName . ' und deine Übung für diese Woche.'
+    ? 'Ein Klick genügt – dann schicken wir dir sofort deine Deutung zu ' . $cardName . ' und deine Übung für diese Woche.'
     : 'Ein Klick genügt, um deine Anmeldung bei Sand der Zeit zu bestätigen.';
 
 $ctaText = $cardName !== '' ? '&rarr; Bestätigen &amp; Deutung erhalten' : '&rarr; Anmeldung bestätigen';
 $leadTxt = $cardName !== ''
-    ? 'Du hast gerade <strong>' . htmlspecialchars($cardName, ENT_QUOTES, 'UTF-8') . '</strong> gezogen. Bestätige mit einem Klick kurz deine E-Mail-Adresse – danach schicken wir dir sofort deine persönliche Tiefendeutung inklusive Wochenübung und sichern deinen unverbindlichen Platz auf der Warteliste für <strong>Die Steinschleifer</strong>.'
+    ? 'Du hast gerade <strong>' . htmlspecialchars($cardName, ENT_QUOTES, 'UTF-8') . '</strong> gezogen. Bestätige mit einem Klick kurz deine E-Mail-Adresse – danach schicken wir dir sofort deine persönliche Deutung inklusive Wochenübung und sichern deinen unverbindlichen Platz auf der Warteliste für <strong>Die Steinschleifer</strong>.'
     : 'Bestätige mit einem Klick kurz deine E-Mail-Adresse, damit wir dir schreiben und deinen Platz auf der Warteliste für <strong>Die Steinschleifer</strong> vormerken dürfen.';
 
 $doiContent = '<tr><td class="pad" style="padding:28px 48px 0;font-family:\'Cormorant Garamond\',Georgia,serif;color:#f1e4c6;">'
